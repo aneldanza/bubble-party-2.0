@@ -6,7 +6,7 @@
 
 @layer components {
   .logo {
-    font-family: var(--font-logo);
+    @apply md:text-xl lg:text-2xl font-logo;
   }
 
   .icon {
