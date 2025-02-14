@@ -10,6 +10,14 @@
   }
 
   .icon {
-    @apply w-6 h-6 text-black;
+    @apply w-6 h-6 text-black cursor-pointer;
+  }
+
+  .btn {
+    @apply px-4 py-2 cursor-pointer;
+  }
+
+  .action-btn {
+    @apply font-logo text-blue-700 text-lg;
   }
 }
