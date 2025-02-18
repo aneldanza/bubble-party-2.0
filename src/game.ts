@@ -6,12 +6,16 @@ class Game {
   private view: GameView;
   private isOver: boolean;
   private shooter: Shooter;
+  private dx: number;
+  private dy: number;
 
   constructor(
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     colors: string[]
   ) {
+    this.dx = 0;
+    this.dy = 0;
     this.view = new GameView(canvas, ctx, colors);
     this.isOver = false;
     this.shooter = new Shooter(
