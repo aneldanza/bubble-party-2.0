@@ -48,6 +48,7 @@ class GameView implements Controls {
   }
 
   draw(): void {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.drawBubble(
       this.canvas.width / 2,
       this.canvas.height - this.radius - 2
