@@ -27,9 +27,7 @@ class GameView implements Controls {
     this.ctx = ctx;
     this.setBubbleRadius();
 
-    window.addEventListener("resize", this.resizeCanvas.bind(this));
-
-    document.addEventListener("mousemove", (e) => this.handleMouseMove(e));
+    this.bindEvents();
   }
 
   init(shooter: Shooter): void {
@@ -39,6 +37,12 @@ class GameView implements Controls {
   resizeCanvas(): void {
     this.setBubbleRadius();
     this.draw();
+  }
+
+  bindEvents(): void {
+    window.addEventListener("resize", this.resizeCanvas.bind(this));
+    document.addEventListener("mousemove", (e) => this.handleMouseMove(e));
+    document.addEventListener("click", () => this.handleMouseClick());
   }
 
   setBubbleRadius(): void {
@@ -64,7 +68,11 @@ class GameView implements Controls {
   draw(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.drawBubble(this.shooter.x, this.shooter.y);
-    this.drawAimLine();
+
+    // Draw aim line only if shooter is not moving
+    if (this.shooter.dx === 0 && this.shooter.dy === 0) {
+      this.drawAimLine();
+    }
   }
 
   drawBubble(x: number, y: number): void {
@@ -87,6 +95,18 @@ class GameView implements Controls {
   handleMouseMove(e: MouseEvent): void {
     this.mousePosX = e.x - this.canvas.offsetLeft;
     this.mousePosY = e.y - this.canvas.offsetTop;
+  }
+
+  handleMouseClick(): void {
+    const dx = this.mousePosX - this.shooter.x;
+    const dy = this.mousePosY - this.shooter.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    // calculate the direction of the shooter
+    this.shooter.setDirection(
+      (dx / length) * this.shooter.speed,
+      (dy / length) * this.shooter.speed
+    );
   }
 }
 
