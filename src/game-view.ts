@@ -1,13 +1,17 @@
+import Shooter from "./shooter";
+
 interface Controls {
+  canvas: HTMLCanvasElement;
   draw(): void;
   drawBubble(x: number, y: number): void;
 }
 
 class GameView implements Controls {
-  private colors: string[];
-  private canvas: HTMLCanvasElement;
+  public colors: string[];
+  public canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  private radius!: number;
+  public radius!: number;
+  private shooter!: Shooter;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -20,6 +24,10 @@ class GameView implements Controls {
     this.setBubbleRadius();
 
     window.addEventListener("resize", this.resizeCanvas.bind(this));
+  }
+
+  init(shooter: Shooter): void {
+    this.shooter = shooter;
   }
 
   resizeCanvas(): void {
@@ -49,10 +57,7 @@ class GameView implements Controls {
 
   draw(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawBubble(
-      this.canvas.width / 2,
-      this.canvas.height - this.radius - 2
-    );
+    this.drawBubble(this.shooter.x, this.shooter.y);
   }
 
   drawBubble(x: number, y: number): void {

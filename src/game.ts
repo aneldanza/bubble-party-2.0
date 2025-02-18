@@ -1,7 +1,11 @@
 import GameView from "./game-view";
+import Shooter from "./shooter";
+import Bubble from "./bubble";
+
 class Game {
   private view: GameView;
   private isOver: boolean;
+  private shooter: Shooter;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -10,6 +14,19 @@ class Game {
   ) {
     this.view = new GameView(canvas, ctx, colors);
     this.isOver = false;
+    this.shooter = new Shooter(
+      canvas.width / 2,
+      canvas.height - this.view.radius * 2,
+      colors[0],
+      0,
+      0,
+      "active"
+    );
+  }
+
+  start(): void {
+    this.view.init(this.shooter);
+    this.animate();
   }
 
   animate(): void {

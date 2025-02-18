@@ -9,5 +9,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const game = new Game(canvas, ctx, COLORS);
 
-  game.animate();
+  game.start();
 });
