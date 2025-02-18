@@ -14,8 +14,14 @@
     <title>Bubble Party</title>
   </head>
   <body>
-    <div id="app" class="h-screen w-screen flex flex-col px-4 md:px-8 lg:px-16">
-      <nav class="h-16 lg:h-24 flex justify-between items-center">
+    <div
+      id="app"
+      class="h-screen w-screen max-h-screen flex flex-col px-4 md:px-8 lg:px-16"
+    >
+      <nav
+        id="navbar"
+        class="h-16 lg:h-24 flex justify-between items-center py-4"
+      >
         <div class="logo">Bubble Party</div>
         <nav class="flex gap-4 items-center text-sm">
           <a
@@ -65,9 +71,12 @@
         </nav>
       </nav>
       <main class="flex-grow">
-        <canvas id="game-canvas" class="w-full h-full flex grow"></canvas>
+        <canvas
+          id="game-canvas"
+          class="w-full h-full max-w-[700px] flex border m-auto"
+        ></canvas>
       </main>
-      <nav>
+      <nav id="game-controls" class="h-16 lg:h-24 py-4">
         <div class="flex justify-center items-center gap-4">
           <button class="btn action-btn" id="toggle-pause">Pause</button>
           <button class="btn action-btn" id="quit">Quit</button>
