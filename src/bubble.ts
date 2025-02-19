@@ -13,29 +13,15 @@ class Bubble {
     color: string,
     col: number,
     row: number,
-    status: string
+    status?: string
   ) {
     this.x = x;
     this.y = y;
     this.color = color;
     this.col = col;
     this.row = row;
-    this.status = status;
+    this.status = status || "";
     this.radius = 20;
-  }
-
-  isAvailable() {
-    if (this.status === "placeholder" && this.isValid()) {
-      return true;
-    }
-    return false;
-  }
-
-  isValid() {
-    if (this.col < 14 && this.col >= 0 && this.row < 12 && this.row >= 0) {
-      return true;
-    }
-    return false;
   }
 }
 

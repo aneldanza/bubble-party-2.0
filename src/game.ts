@@ -1,11 +1,12 @@
 import GameView from "./game-view";
 import Shooter from "./shooter";
-// import Bubble from "./bubble";
+import Bubble from "./bubble";
 
 class Game {
   private view: GameView;
   private isOver: boolean;
   private shooter: Shooter;
+  private bubbles: Bubble[][];
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -16,23 +17,45 @@ class Game {
     this.isOver = false;
     this.shooter = new Shooter(
       this.view.canvas.width / 2,
-      this.view.canvas.height - this.view.radius * 2,
-      colors[0]
+      this.view.canvas.height - this.view.radius,
+      this.getRandColor()
     );
+    this.bubbles = [];
   }
 
   start(): void {
     this.view.init(this.shooter);
     this.animate();
+    this.addRow();
   }
 
   animate(): void {
     if (!this.isOver) {
-      this.view.draw();
       this.shooter.move();
       this.handleBorderCollision();
+      this.view.draw(this.bubbles, this.shooter);
       requestAnimationFrame(this.animate.bind(this));
     }
+  }
+
+  addRow(): void {
+    const row = [];
+    for (let col = 0; col < this.view.maxCols; col++) {
+      const x = col * this.view.radius * 2 + this.view.radius;
+      const y = this.view.radius;
+      const color = this.getRandColor();
+      const bubble = new Bubble(
+        x,
+        y,
+        color,
+        col,
+        this.bubbles.length,
+        "visible"
+      );
+
+      row.push(bubble);
+    }
+    this.bubbles.unshift(row);
   }
 
   handleBorderCollision(): void {
@@ -56,6 +79,12 @@ class Game {
       // reverse the direction of the shooter
       this.shooter.dy = -this.shooter.dy;
     }
+  }
+
+  getRandColor(): string {
+    return this.view.colors[
+      Math.floor(Math.random() * this.view.colors.length)
+    ];
   }
 }
 
