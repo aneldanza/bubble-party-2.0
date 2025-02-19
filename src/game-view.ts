@@ -16,6 +16,7 @@ class GameView implements Controls {
   private mousePosY: number;
   public maxRows: number;
   public maxCols: number;
+  private bubbleMargin: number;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -29,6 +30,7 @@ class GameView implements Controls {
     this.ctx = ctx;
     this.maxCols = 0;
     this.maxRows = 0;
+    this.bubbleMargin = 3;
 
     this.setBubbleRadius();
 
@@ -42,7 +44,10 @@ class GameView implements Controls {
 
   calculateMaxRowsAndCols(): void {
     const bubbleDiameter = this.radius * 2;
-    this.maxCols = Math.floor(this.canvas.width / bubbleDiameter);
+
+    this.maxCols = Math.floor(
+      (this.canvas.width - this.radius) / (bubbleDiameter + this.bubbleMargin)
+    );
     this.maxRows = Math.floor(this.canvas.height / bubbleDiameter);
   }
 
@@ -110,7 +115,7 @@ class GameView implements Controls {
     for (let row = 0; row < bubbles.length; row++) {
       for (let col = 0; col < bubbles[row].length; col++) {
         const bubble = bubbles[row][col];
-        const x = col * this.radius * 2 + this.radius;
+        const x = col * (this.radius * 2 + this.bubbleMargin) + this.radius;
         const y = this.radius + row * this.radius * 2;
         this.drawBubble(x, y, bubble.color);
       }

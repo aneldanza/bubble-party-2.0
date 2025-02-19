@@ -39,6 +39,7 @@ class Game {
   }
 
   fillBubbles(): void {
+    this.addRow();
     const interval = setInterval(() => {
       if (this.bubbles.length === this.view.maxRows) {
         clearInterval(interval);
@@ -46,7 +47,7 @@ class Game {
         return;
       }
       this.addRow();
-    }, 1000);
+    }, 20000);
   }
 
   addRow(): void {
