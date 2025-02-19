@@ -26,7 +26,7 @@ class Game {
   start(): void {
     this.view.init(this.shooter);
     this.animate();
-    this.addRow();
+    this.fillBubbles();
   }
 
   animate(): void {
@@ -36,6 +36,17 @@ class Game {
       this.view.draw(this.bubbles, this.shooter);
       requestAnimationFrame(this.animate.bind(this));
     }
+  }
+
+  fillBubbles(): void {
+    const interval = setInterval(() => {
+      if (this.bubbles.length === this.view.maxRows) {
+        clearInterval(interval);
+        this.isOver = true;
+        return;
+      }
+      this.addRow();
+    }, 1000);
   }
 
   addRow(): void {
