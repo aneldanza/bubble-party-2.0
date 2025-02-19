@@ -1,3 +1,5 @@
+import Shooter from "./shooter";
+
 class Bubble {
   public x!: number;
   public y!: number;
@@ -18,6 +20,14 @@ class Bubble {
   setPos(x: number, y: number): void {
     this.x = x;
     this.y = y;
+  }
+
+  isHit(shooter: Shooter): boolean {
+    const dx = this.x - shooter.x;
+    const dy = this.y - shooter.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    return distance < this.radius + shooter.radius;
   }
 }
 

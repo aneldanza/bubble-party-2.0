@@ -3,7 +3,7 @@ import Bubble from "./bubble";
 
 interface Controls {
   canvas: HTMLCanvasElement;
-  drawBubble(x: number, y: number, color: string): void;
+  drawBubble(bubble: Bubble): void;
 }
 
 class GameView implements Controls {
@@ -91,7 +91,7 @@ class GameView implements Controls {
   draw(bubbles: Bubble[][], shooter: Shooter): void {
     this.shooter = shooter;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawBubble(this.shooter.x, this.shooter.y, this.shooter.color);
+    this.drawBubble(this.shooter);
     this.drawBubbles(bubbles);
 
     // Draw aim line only if shooter is not moving
@@ -100,10 +100,10 @@ class GameView implements Controls {
     }
   }
 
-  drawBubble(x: number, y: number, color: string): void {
+  drawBubble(bubble: Bubble): void {
     this.ctx.beginPath();
-    this.ctx.arc(x, y, this.radius, 0, Math.PI * 2);
-    this.ctx.fillStyle = color;
+    this.ctx.arc(bubble.x, bubble.y, this.radius, 0, Math.PI * 2);
+    this.ctx.fillStyle = bubble.color;
     this.ctx.fill();
     this.ctx.closePath();
   }
@@ -118,9 +118,7 @@ class GameView implements Controls {
   }
 
   drawBubbles(bubbles: Bubble[][]): void {
-    // let order = 0;
     for (let row = bubbles.length - 1; row >= 0; row--) {
-      //   order++;
       for (let col = 0; col < bubbles[row].length; col++) {
         const bubble = bubbles[row][col];
         let x =
@@ -128,13 +126,15 @@ class GameView implements Controls {
           this.radius +
           this.bubbleMargin;
 
-        // if (order % 2 !== 0) {
         if (bubble.isOffset) {
           x += this.radius;
         }
 
         const y = this.radius + row * (this.radius * 2 + this.bubbleMargin);
-        this.drawBubble(x, y, bubble.color);
+
+        bubble.setPos(x, y);
+
+        this.drawBubble(bubble);
       }
     }
   }

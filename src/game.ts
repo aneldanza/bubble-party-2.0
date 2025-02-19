@@ -34,6 +34,7 @@ class Game {
       this.shooter.move();
       this.handleBorderCollision();
       this.view.draw(this.bubbles, this.shooter);
+      this.detectCollision();
       requestAnimationFrame(this.animate.bind(this));
     }
   }
@@ -106,10 +107,10 @@ class Game {
     const dy = this.view.mousePosY - this.shooter.y;
     const length = Math.sqrt(dx * dx + dy * dy);
 
-    // this.shooter.setDirection(
-    //   (dx / length) * this.shooter.speed,
-    //   (dy / length) * this.shooter.speed
-    // );
+    this.shooter.setDirection(
+      (dx / length) * this.shooter.speed,
+      (dy / length) * this.shooter.speed
+    );
 
     // increase move count
     this.shooter.moves++;
@@ -131,6 +132,16 @@ class Game {
       this.view.canvas.height - this.view.radius,
       this.getRandColor()
     );
+  }
+
+  detectCollision(): void {
+    this.bubbles.forEach((row) => {
+      row.forEach((bubble) => {
+        if (bubble.isHit(this.shooter)) {
+          console.log("hit");
+        }
+      });
+    });
   }
 }
 
