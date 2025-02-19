@@ -7,6 +7,7 @@ class Game {
   private isOver: boolean;
   private shooter: Shooter;
   private bubbles: Bubble[][];
+  public moves: number;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -15,18 +16,17 @@ class Game {
   ) {
     this.view = new GameView(canvas, ctx, colors);
     this.isOver = false;
-    this.shooter = new Shooter(
-      this.view.canvas.width / 2,
-      this.view.canvas.height - this.view.radius,
-      this.getRandColor()
-    );
+    this.shooter = new Shooter(this.getRandColor());
     this.bubbles = [];
+    this.moves = 0;
+    this.bindEvents();
   }
 
   start(): void {
     this.view.init(this.shooter);
     this.animate();
-    this.fillBubbles();
+    this.addRow();
+    // this.fillBubbles();
   }
 
   animate(): void {
@@ -39,7 +39,6 @@ class Game {
   }
 
   fillBubbles(): void {
-    this.addRow();
     const interval = setInterval(() => {
       if (this.bubbles.length === this.view.maxRows) {
         clearInterval(interval);
@@ -47,23 +46,21 @@ class Game {
         return;
       }
       this.addRow();
-    }, 20000);
+    }, 2000);
   }
 
   addRow(): void {
     const row = [];
-    for (let col = 0; col < this.view.maxCols; col++) {
-      const x = col * this.view.radius * 2 + this.view.radius;
-      const y = this.view.radius;
+    const isOffset = this.bubbles.length === 0 || !this.bubbles[0][0].isOffset;
+
+    console.log("isOffset", isOffset);
+
+    const colNumber = isOffset ? this.view.maxCols - 1 : this.view.maxCols;
+
+    for (let col = 0; col < colNumber; col++) {
       const color = this.getRandColor();
-      const bubble = new Bubble(
-        x,
-        y,
-        color,
-        col,
-        this.bubbles.length,
-        "visible"
-      );
+      const bubble = new Bubble(color, col, this.bubbles.length);
+      bubble.isOffset = isOffset;
 
       row.push(bubble);
     }
@@ -97,6 +94,43 @@ class Game {
     return this.view.colors[
       Math.floor(Math.random() * this.view.colors.length)
     ];
+  }
+
+  bindEvents(): void {
+    document.addEventListener("click", () => this.handleMouseClick());
+  }
+
+  handleMouseClick(): void {
+    // calculate the direction of the shooter
+    const dx = this.view.mousePosX - this.shooter.x;
+    const dy = this.view.mousePosY - this.shooter.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    // this.shooter.setDirection(
+    //   (dx / length) * this.shooter.speed,
+    //   (dy / length) * this.shooter.speed
+    // );
+
+    // increase move count
+    this.shooter.moves++;
+
+    // add a new row of bubbles after 5 moves
+    if (this.shooter.moves > 2) {
+      this.shooter.moves = 0;
+      if (this.bubbles.length < this.view.maxRows) {
+        this.addRow();
+      } else {
+        this.isOver = true;
+        console.log("Game Over");
+      }
+    }
+
+    // prepare shooter for next move
+    this.shooter.reset(
+      this.view.canvas.width / 2,
+      this.view.canvas.height - this.view.radius,
+      this.getRandColor()
+    );
   }
 }
 

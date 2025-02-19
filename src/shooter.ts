@@ -4,12 +4,14 @@ class Shooter extends Bubble {
   public dx: number;
   public dy: number;
   public speed: number;
+  public moves: number;
 
-  constructor(x: number, y: number, color: string, speed?: number) {
-    super(x, y, color, 0, 0, "shooter");
+  constructor(color: string, speed?: number) {
+    super(color, 0, 0);
     this.dx = 0;
     this.dy = 0;
     this.speed = speed || 7;
+    this.moves = 0;
   }
 
   move(): void {
@@ -20,6 +22,12 @@ class Shooter extends Bubble {
   setDirection(dx: number, dy: number): void {
     this.dx = dx;
     this.dy = dy;
+  }
+
+  reset(x: number, y: number, color: string): void {
+    this.x = x;
+    this.y = y;
+    this.color = color;
   }
 }
 
