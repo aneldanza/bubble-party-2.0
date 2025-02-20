@@ -6,3 +6,21 @@ export const COLORS: string[] = [
   "#9370DB", // medium purple
   "#FF4500", // red-orange
 ];
+
+export const OFFSET_RELATIVE_POSITIONS = [
+  { ROW: 0, COL: -1 },
+  { ROW: 0, COL: 1 },
+  { ROW: 1, COL: 1 },
+  { ROW: 1, COL: 0 },
+  { ROW: -1, COL: 0 },
+  { ROW: -1, COL: 1 },
+];
+
+export const RELATIVE_POSITIONS = [
+  { ROW: 0, COL: -1 },
+  { ROW: 0, COL: 1 },
+  { ROW: -1, COL: -1 },
+  { ROW: -1, COL: 0 },
+  { ROW: 1, COL: -1 },
+  { ROW: 1, COL: 0 },
+];

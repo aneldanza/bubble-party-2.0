@@ -2,35 +2,24 @@ import Bubble from "./bubble";
 import GameView from "./game-view";
 import Shooter from "./shooter";
 
-const OFFSET_RELATIVE_POSITIONS = [
-  { ROW: 0, COL: -1 },
-  { ROW: 0, COL: 1 },
-  { ROW: 1, COL: 1 },
-  { ROW: 1, COL: 0 },
-  { ROW: -1, COL: 0 },
-  { ROW: -1, COL: 1 },
-];
-
-const RELATIVE_POSITIONS = [
-  { ROW: 0, COL: -1 },
-  { ROW: 0, COL: 1 },
-  { ROW: -1, COL: -1 },
-  { ROW: -1, COL: 0 },
-  { ROW: 1, COL: -1 },
-  { ROW: 1, COL: 0 },
-];
-
 class CollisionManager {
   private view: GameView;
   private bubbles: (Bubble | null)[][] = [];
   private shooter: Shooter;
-  public newBubble: Bubble;
+  private _newBubble: Bubble;
 
   constructor(view: GameView, bubbles: (Bubble | null)[][], shooter: Shooter) {
     this.view = view;
     this.bubbles = bubbles;
     this.shooter = shooter;
-    this.newBubble = new Bubble(this.shooter.color, 0, 0);
+    this._newBubble = new Bubble("transparent", 0, 0);
+  }
+
+  get newBubble(): Bubble | null {
+    if (this._newBubble.color === "transparent") {
+      return null;
+    }
+    return this._newBubble;
   }
 
   handleBorderCollision(): void {
@@ -59,8 +48,8 @@ class CollisionManager {
   handleCollision(hitBubble: Bubble): void {
     const isOffsetRow = hitBubble.isOffset;
     const isFirstCol = hitBubble.col === 0;
-    this.newBubble = new Bubble(this.shooter.color, 0, 0);
-    this.newBubble.setPos(this.shooter.x, this.shooter.y);
+    this._newBubble = new Bubble(this.shooter.color, 0, 0);
+    this._newBubble.setPos(this.shooter.x, this.shooter.y);
 
     const isLastCol = isOffsetRow
       ? hitBubble.col + 1 === this.view.maxCols - 1
@@ -80,31 +69,30 @@ class CollisionManager {
 
   isLeftCollision(hitBubble: Bubble): boolean {
     return (
-      this.newBubble.x < hitBubble.x &&
-      this.newBubble.y > hitBubble.y - this.view.radius &&
-      this.newBubble.y < hitBubble.y + this.view.radius
+      this._newBubble.x < hitBubble.x &&
+      this._newBubble.y > hitBubble.y - this.view.radius &&
+      this._newBubble.y < hitBubble.y + this.view.radius
     );
   }
 
   isRightCollision(hitBubble: Bubble): boolean {
     return (
-      this.newBubble.x > hitBubble.x &&
-      this.newBubble.y > hitBubble.y - this.view.radius &&
-      this.newBubble.y < hitBubble.y + this.view.radius
+      this._newBubble.x > hitBubble.x &&
+      this._newBubble.y > hitBubble.y - this.view.radius &&
+      this._newBubble.y < hitBubble.y + this.view.radius
     );
   }
 
   isBottomCollision(hitBubble: Bubble): boolean {
     return (
-      this.newBubble.y > hitBubble.y &&
-      this.newBubble.y <
+      this._newBubble.y > hitBubble.y &&
+      this._newBubble.y <
         hitBubble.y + this.view.radius * 2 + this.view.bubbleMargin / 2
     );
   }
 
   handleBottomCollision(
     hitBubble: Bubble,
-
     isOffsetRow: boolean,
     isFirstCol: boolean
   ): void {
@@ -114,7 +102,7 @@ class CollisionManager {
     console.log("bottom collision");
 
     // if bubble is hit at the left-bottom corner
-    if (this.newBubble.x < hitBubble.x) {
+    if (this._newBubble.x < hitBubble.x) {
       if (!isOffsetRow && !isFirstCol) {
         col = hitBubble.col - 1;
       }
@@ -135,7 +123,7 @@ class CollisionManager {
         return;
       }
 
-      this.bubbles[row][col] = this.newBubble;
+      this.bubbles[row][col] = this._newBubble;
 
       // create new row if it doesn't exist
     } else {
@@ -144,7 +132,7 @@ class CollisionManager {
         ? this.view.maxCols - 1
         : this.view.maxCols;
       const newRow = Array(newRowLength).fill(null);
-      newRow[col] = this.newBubble;
+      newRow[col] = this._newBubble;
       this.bubbles.push(newRow);
     }
   }
@@ -164,7 +152,7 @@ class CollisionManager {
         hitBubble.col - 1,
         hitBubble.isOffset
       );
-      this.bubbles[hitBubble.row][hitBubble.col - 1] = this.newBubble;
+      this.bubbles[hitBubble.row][hitBubble.col - 1] = this._newBubble;
     }
   }
 
@@ -178,66 +166,17 @@ class CollisionManager {
         hitBubble.col + 1,
         hitBubble.isOffset
       );
-      this.bubbles[this.newBubble.row][this.newBubble.col] = this.newBubble;
+      this.bubbles[this._newBubble.row][this._newBubble.col] = this._newBubble;
     }
   }
 
   setBubbleParams(row: number, col: number, isOffset: boolean) {
-    if (!this.newBubble) {
+    if (!this._newBubble) {
       return;
     }
-    this.newBubble.row = row;
-    this.newBubble.col = col;
-    this.newBubble.isOffset = isOffset;
-  }
-
-  findBubbleCluster() {
-    const visited = new Set<string>();
-    const queue = [this.newBubble];
-    const cluster = [];
-
-    while (queue.length) {
-      const currentBubble = queue.shift() as Bubble;
-      const key = `${currentBubble.row}-${currentBubble.col}`;
-
-      if (visited.has(key)) {
-        continue;
-      }
-
-      visited.add(key);
-
-      if (currentBubble.color === this.newBubble.color) {
-        cluster.push(currentBubble);
-        const neighbors = this.findNeighbors(currentBubble);
-        queue.push(...neighbors);
-      }
-    }
-
-    return cluster;
-  }
-
-  findNeighbors(bubble: Bubble): Bubble[] {
-    const relativePositions = bubble.isOffset
-      ? OFFSET_RELATIVE_POSITIONS
-      : RELATIVE_POSITIONS;
-
-    return relativePositions
-      .map(({ ROW, COL }) => {
-        const row = bubble.row + ROW;
-        const col = bubble.col + COL;
-
-        if (
-          row < 0 ||
-          col < 0 ||
-          !this.bubbles[row] ||
-          !this.bubbles[row][col]
-        ) {
-          return null;
-        }
-
-        return this.bubbles[row][col] as Bubble;
-      })
-      .filter((bubble) => bubble !== null);
+    this._newBubble.row = row;
+    this._newBubble.col = col;
+    this._newBubble.isOffset = isOffset;
   }
 }
 

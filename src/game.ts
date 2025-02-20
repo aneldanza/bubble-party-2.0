@@ -2,6 +2,7 @@ import GameView from "./game-view";
 import Shooter from "./shooter";
 import Bubble from "./bubble";
 import CollisionManager from "./collission-manager";
+import { OFFSET_RELATIVE_POSITIONS, RELATIVE_POSITIONS } from "./constants";
 
 class Game {
   private view: GameView;
@@ -21,7 +22,7 @@ class Game {
     this.isOver = false;
 
     this.view = new GameView(canvas, ctx, colors);
-    this.shooter = new Shooter(this.getRandColor());
+    this.shooter = new Shooter(this.getRandColor(), 8);
     this.collisionManager = new CollisionManager(
       this.view,
       this.bubbles,
@@ -123,21 +124,28 @@ class Game {
         }
         if (bubble.isHit(this.shooter, this.view.radius)) {
           console.log("hit");
-          const newBubble = new Bubble(this.shooter.color, 0, 0);
-          newBubble.setPos(this.shooter.x, this.shooter.y);
 
           this.collisionManager.handleCollision(bubble);
-          const cluster = this.collisionManager.findBubbleCluster();
-          console.log(
-            "cluster",
-            cluster.map((b) => b.row + "," + b.col)
-          );
+          const newBubble = this.collisionManager.newBubble;
 
-          // check if new bubble is too low
-          if (newBubble.y + this.view.radius > this.view.canvas.height) {
-            this.isOver = true;
-            console.log("Game Over");
-            return;
+          if (newBubble) {
+            const cluster = this.findBubbleCluster(newBubble);
+            console.log(
+              "cluster",
+              cluster.map((b) => b.row + "," + b.col)
+            );
+            if (cluster.length > 2) {
+              this.dropBubbles(cluster);
+            }
+
+            // check if new bubble is too low
+            if (newBubble.y + this.view.radius > this.view.canvas.height) {
+              this.isOver = true;
+              console.log("Game Over");
+              return;
+            }
+          } else {
+            throw new Error("new bubble was not created on collision");
           }
 
           // prepare shooter for next move
@@ -151,6 +159,61 @@ class Game {
           return;
         }
       });
+    });
+  }
+
+  findBubbleCluster(bubble: Bubble): Bubble[] {
+    const visited = new Set<string>();
+    const queue = [bubble];
+    const cluster = [];
+
+    while (queue.length) {
+      const currentBubble = queue.shift() as Bubble;
+      const key = `${currentBubble.row}-${currentBubble.col}`;
+
+      if (visited.has(key)) {
+        continue;
+      }
+
+      visited.add(key);
+
+      if (currentBubble.color === bubble.color) {
+        cluster.push(currentBubble);
+        const neighbors = this.findNeighbors(currentBubble);
+        queue.push(...neighbors);
+      }
+    }
+
+    return cluster;
+  }
+
+  findNeighbors(bubble: Bubble): Bubble[] {
+    const relativePositions = bubble.isOffset
+      ? OFFSET_RELATIVE_POSITIONS
+      : RELATIVE_POSITIONS;
+
+    return relativePositions
+      .map(({ ROW, COL }) => {
+        const row = bubble.row + ROW;
+        const col = bubble.col + COL;
+
+        if (
+          row < 0 ||
+          col < 0 ||
+          !this.bubbles[row] ||
+          !this.bubbles[row][col]
+        ) {
+          return null;
+        }
+
+        return this.bubbles[row][col] as Bubble;
+      })
+      .filter((bubble) => bubble !== null);
+  }
+
+  dropBubbles(cluster: Bubble[]): void {
+    cluster.forEach((bubble) => {
+      this.bubbles[bubble.row][bubble.col] = null;
     });
   }
 }
