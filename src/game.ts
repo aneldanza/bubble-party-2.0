@@ -1,9 +1,11 @@
 import GameView from "./game-view";
 import Shooter from "./shooter";
 import Bubble from "./bubble";
+import CollisionManager from "./collission-manager";
 
 class Game {
   private view: GameView;
+  private collisionManager: CollisionManager;
   private isOver: boolean;
   private shooter: Shooter;
   private bubbles: (Bubble | null)[][];
@@ -14,11 +16,14 @@ class Game {
     ctx: CanvasRenderingContext2D,
     colors: string[]
   ) {
-    this.view = new GameView(canvas, ctx, colors);
-    this.isOver = false;
-    this.shooter = new Shooter(this.getRandColor());
     this.bubbles = [];
     this.moves = 0;
+    this.isOver = false;
+
+    this.view = new GameView(canvas, ctx, colors);
+    this.shooter = new Shooter(this.getRandColor());
+    this.collisionManager = new CollisionManager(this.view, this.bubbles);
+
     this.bindEvents();
   }
 
@@ -140,7 +145,7 @@ class Game {
           const newBubble = new Bubble(this.shooter.color, 0, 0);
           newBubble.setPos(this.shooter.x, this.shooter.y);
 
-          this.handleCollision(bubble, newBubble);
+          this.collisionManager.handleCollision(bubble, newBubble);
 
           // check if new bubble is too low
           if (newBubble.y + this.view.radius > this.view.canvas.height) {
@@ -161,169 +166,6 @@ class Game {
         }
       });
     });
-  }
-
-  handleCollision(hitBubble: Bubble, newBubble: Bubble): void {
-    const isOffsetRow = hitBubble.isOffset;
-    const isFirstCol = hitBubble.col === 0;
-
-    const isLastCol = isOffsetRow
-      ? hitBubble.col + 1 === this.view.maxCols - 1
-      : hitBubble.col + 1 === this.view.maxCols;
-
-    if (this.isLeftCollision(hitBubble, newBubble)) {
-      this.handleLeftCollision(hitBubble, newBubble, isFirstCol);
-    } else if (this.isRightCollision(hitBubble, newBubble)) {
-      this.handleRightCollision(hitBubble, newBubble, isLastCol);
-    } else if (this.isBottomCollision(hitBubble, newBubble)) {
-      this.handleBottomCollision(hitBubble, newBubble, isOffsetRow, isFirstCol);
-    } else {
-      console.log("no side or bottom collision");
-      debugger;
-    }
-  }
-
-  getNewBubbleRowCol(
-    hitBubble: Bubble,
-    newBubble: Bubble
-  ): { row: number; col: number } {
-    let row = hitBubble.row;
-    let col = hitBubble.col;
-
-    if (this.isBottomCollision(hitBubble, newBubble)) {
-      row = hitBubble.row + 1;
-      col = hitBubble.col;
-    } else {
-      // check if the bubble was hit on the left side
-      if (newBubble.x < hitBubble.x) {
-        col = hitBubble.col - 1;
-        if (hitBubble.isOffset) {
-          row = hitBubble.row + 1;
-        }
-      } else {
-        col = hitBubble.col + 1;
-        if (!hitBubble.isOffset) {
-          row = hitBubble.row + 1;
-        }
-      }
-    }
-
-    return { row, col };
-  }
-
-  isBottomCollision(hitBubble: Bubble, newBubble: Bubble): boolean {
-    return (
-      newBubble.y > hitBubble.y &&
-      newBubble.y <
-        hitBubble.y + this.view.radius * 2 + this.view.bubbleMargin / 2
-    );
-  }
-
-  handleBottomCollision(
-    hitBubble: Bubble,
-    newBubble: Bubble,
-    isOffsetRow: boolean,
-    isFirstCol: boolean
-  ): void {
-    const row = hitBubble.row + 1;
-    let col = hitBubble.col;
-    console.log("hitBubble", hitBubble.col);
-    console.log("bottom collision");
-
-    // if bubble is hit at the left-bottom corner
-    if (newBubble.x < hitBubble.x) {
-      if (!isOffsetRow && !isFirstCol) {
-        col = hitBubble.col - 1;
-      }
-      // if bubble is hit at the right-bottom corner
-    } else {
-      if (isOffsetRow) {
-        col = hitBubble.col + 1;
-      }
-    }
-
-    newBubble.col = col;
-    newBubble.row = row;
-    newBubble.isOffset = !isOffsetRow;
-
-    // insert new bubble into the bubbles array if it exists
-    if (this.bubbles[row]) {
-      const targetBubble = this.bubbles[row][col];
-      if (targetBubble !== null) {
-        this.handleCollision(targetBubble, newBubble);
-        return;
-      }
-
-      this.bubbles[row][col] = newBubble;
-
-      // create new row if it doesn't exist
-    } else {
-      const isNewRowOffset = !isOffsetRow;
-      const newRowLength = isNewRowOffset
-        ? this.view.maxCols - 1
-        : this.view.maxCols;
-      const newRow = Array(newRowLength).fill(null);
-      newRow[col] = newBubble;
-      this.bubbles.push(newRow);
-    }
-  }
-
-  isLeftCollision(hitBubble: Bubble, newBubble: Bubble): boolean {
-    return (
-      newBubble.x < hitBubble.x &&
-      newBubble.y > hitBubble.y - this.view.radius &&
-      newBubble.y < hitBubble.y + this.view.radius
-    );
-  }
-
-  isRightCollision(hitBubble: Bubble, newBubble: Bubble): boolean {
-    return (
-      newBubble.x > hitBubble.x &&
-      newBubble.y > hitBubble.y - this.view.radius &&
-      newBubble.y < hitBubble.y + this.view.radius
-    );
-  }
-
-  handleLeftCollision(
-    hitBubble: Bubble,
-    newBubble: Bubble,
-    isFirstCol: boolean
-  ): void {
-    console.log("left side collision");
-    if (isFirstCol) {
-      this.handleBottomCollision(
-        hitBubble,
-        newBubble,
-        hitBubble.isOffset,
-        isFirstCol
-      );
-    } else {
-      newBubble.col = hitBubble.col - 1;
-      newBubble.row = hitBubble.row;
-      newBubble.isOffset = hitBubble.isOffset;
-      this.bubbles[hitBubble.row][hitBubble.col - 1] = newBubble;
-    }
-  }
-
-  handleRightCollision(
-    hitBubble: Bubble,
-    newBubble: Bubble,
-    isLastCol: boolean
-  ): void {
-    console.log("right side collision");
-    if (isLastCol) {
-      this.handleBottomCollision(
-        hitBubble,
-        newBubble,
-        hitBubble.isOffset,
-        false
-      );
-    } else {
-      newBubble.col = hitBubble.col + 1;
-      newBubble.row = hitBubble.row;
-      newBubble.isOffset = hitBubble.isOffset;
-      this.bubbles[hitBubble.row][hitBubble.col + 1] = newBubble;
-    }
   }
 }
 
