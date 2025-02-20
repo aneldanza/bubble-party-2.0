@@ -9,5 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const game = new Game(canvas, ctx, COLORS);
 
+  const score = document.getElementById("score-value") as HTMLSpanElement;
+  game.score.subscribe((value) => {
+    score.textContent = value.toString();
+  });
+
   game.start();
 });

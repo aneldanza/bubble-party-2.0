@@ -1,6 +1,7 @@
 import GameView from "./game-view";
 import Shooter from "./shooter";
 import Bubble from "./bubble";
+import Observer from "./observer";
 import CollisionManager from "./collission-manager";
 import { OFFSET_RELATIVE_POSITIONS, RELATIVE_POSITIONS } from "./constants";
 
@@ -11,6 +12,7 @@ class Game {
   private shooter: Shooter;
   private bubbles: (Bubble | null)[][];
   public moves: number;
+  public score: Observer<number>;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -20,6 +22,7 @@ class Game {
     this.bubbles = [];
     this.moves = 0;
     this.isOver = false;
+    this.score = new Observer<number>(0);
 
     this.view = new GameView(canvas, ctx, colors);
     this.shooter = new Shooter(this.getRandColor(), 10);
@@ -134,13 +137,9 @@ class Game {
             if (cluster.length > 2) {
               const clusterLength = cluster.length;
               this.dropBubbles(cluster);
-              const highestRowinCluster = Math.min(
-                ...cluster.map((b) => b.row)
-              );
-              console.log("highestRowinCluster", highestRowinCluster);
 
-              const floatingBubbles =
-                this.findFloatingBubbles(highestRowinCluster);
+              const floatingBubbles = this.findFloatingBubbles();
+
               console.log(
                 "cluster",
                 cluster.map((b) => b.row + "," + b.col)
@@ -157,6 +156,7 @@ class Game {
               this.dropBubbles(floatingBubbles);
 
               console.log("bubblesToDropLength", bubblesToDropLength);
+              this.score.value += bubblesToDropLength;
             }
 
             // check if new bubble is too low
@@ -234,7 +234,7 @@ class Game {
     });
   }
 
-  findFloatingBubbles(startRow: number): Bubble[] {
+  findFloatingBubbles(): Bubble[] {
     const visited: boolean[][] = this.bubbles.map((row) =>
       row.map(() => false)
     );
@@ -243,7 +243,7 @@ class Game {
 
     // initialize queue with all of the bubbles in the top row
     for (let col = 0; col < this.view.maxCols; col++) {
-      const bubble = this.bubbles[startRow][col];
+      const bubble = this.bubbles[0][col];
       if (bubble) {
         queue.push(bubble);
         visited[bubble.row][bubble.col] = true;
@@ -274,11 +274,6 @@ class Game {
     }
 
     return floatingBubbles;
-  }
-
-  hasNeighbors(bubble: Bubble): boolean {
-    const neighbors = this.findNeighbors(bubble);
-    return neighbors.length > 0;
   }
 
   resetShooter(): void {
