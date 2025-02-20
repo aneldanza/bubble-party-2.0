@@ -6,14 +6,12 @@ class Bubble {
   public color: string;
   public col: number;
   public row: number;
-  public radius: number;
   public isOffset: boolean;
 
   constructor(color: string, col: number, row: number) {
     this.color = color;
     this.col = col;
     this.row = row;
-    this.radius = 20;
     this.isOffset = false;
   }
 
@@ -22,12 +20,12 @@ class Bubble {
     this.y = y;
   }
 
-  isHit(shooter: Shooter): boolean {
+  isHit(shooter: Shooter, radius: number): boolean {
     const dx = this.x - shooter.x;
     const dy = this.y - shooter.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    return distance < this.radius + shooter.radius;
+    return distance < radius * 2;
   }
 }
 

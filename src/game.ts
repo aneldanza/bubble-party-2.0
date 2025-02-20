@@ -6,7 +6,7 @@ class Game {
   private view: GameView;
   private isOver: boolean;
   private shooter: Shooter;
-  private bubbles: Bubble[][];
+  private bubbles: (Bubble | null)[][];
   public moves: number;
 
   constructor(
@@ -52,7 +52,7 @@ class Game {
 
   addRow(): void {
     const row = [];
-    const isOffset = this.bubbles.length === 0 || !this.bubbles[0][0].isOffset;
+    const isOffset = this.bubbles.length === 0 || !this.bubbles[0][0]!.isOffset;
 
     console.log("isOffset", isOffset);
 
@@ -119,29 +119,148 @@ class Game {
     if (this.shooter.moves > 2) {
       this.shooter.moves = 0;
       if (this.bubbles.length < this.view.maxRows) {
-        this.addRow();
+        setTimeout(() => {
+          this.addRow();
+        }, 1000);
       } else {
         this.isOver = true;
         console.log("Game Over");
       }
     }
-
-    // prepare shooter for next move
-    this.shooter.reset(
-      this.view.canvas.width / 2,
-      this.view.canvas.height - this.view.radius,
-      this.getRandColor()
-    );
   }
 
   detectCollision(): void {
     this.bubbles.forEach((row) => {
       row.forEach((bubble) => {
-        if (bubble.isHit(this.shooter)) {
+        if (!bubble) {
+          return;
+        }
+        if (bubble.isHit(this.shooter, this.view.radius)) {
           console.log("hit");
+          const newBubble = new Bubble(this.shooter.color, 0, 0);
+          newBubble.setPos(this.shooter.x, this.shooter.y);
+
+          this.handleCollision(bubble, newBubble);
+
+          // check if new bubble is too low
+          if (newBubble.y + this.view.radius > this.view.canvas.height) {
+            this.isOver = true;
+            console.log("Game Over");
+            return;
+          }
+
+          // prepare shooter for next move
+          this.shooter.reset(
+            this.view.canvas.width / 2,
+            this.view.canvas.height - this.view.radius,
+            this.getRandColor()
+          );
+
+          // return early if collision is detected
+          return;
         }
       });
     });
+  }
+
+  handleCollision(hitBubble: Bubble, newBubble: Bubble): void {
+    if (this.isBottomCollision(hitBubble, newBubble)) {
+      this.handleBottomCollision(hitBubble, newBubble);
+      return;
+    }
+  }
+
+  getNewBubbleRowCol(
+    hitBubble: Bubble,
+    newBubble: Bubble
+  ): { row: number; col: number } {
+    let row = hitBubble.row;
+    let col = hitBubble.col;
+
+    if (this.isBottomCollision(hitBubble, newBubble)) {
+      row = hitBubble.row + 1;
+      col = hitBubble.col;
+    } else {
+      // check if the bubble was hit on the left side
+      if (newBubble.x < hitBubble.x) {
+        col = hitBubble.col - 1;
+        if (hitBubble.isOffset) {
+          row = hitBubble.row + 1;
+        }
+      } else {
+        col = hitBubble.col + 1;
+        if (!hitBubble.isOffset) {
+          row = hitBubble.row + 1;
+        }
+      }
+    }
+
+    return { row, col };
+  }
+
+  isBottomCollision(hitBubble: Bubble, newBubble: Bubble): boolean {
+    return (
+      newBubble.x >
+        hitBubble.x - this.view.radius - this.view.bubbleMargin / 2 &&
+      newBubble.x <
+        hitBubble.x + this.view.radius + this.view.bubbleMargin / 2 &&
+      newBubble.y > hitBubble.y &&
+      newBubble.y <
+        hitBubble.y + this.view.radius * 2 + this.view.bubbleMargin / 2
+    );
+  }
+
+  handleBottomCollision(hitBubble: Bubble, newBubble: Bubble): void {
+    const isOffsetRow = hitBubble.isOffset;
+    const isFirstCol = hitBubble.col === 0;
+
+    const isLastCol = isOffsetRow
+      ? hitBubble.col === this.view.maxCols - 1
+      : hitBubble.col === this.view.maxCols;
+
+    const row = hitBubble.row + 1;
+    let col = hitBubble.col;
+    console.log("hitBubble", hitBubble.col);
+
+    // if bubble is hit at the left-bottom corner
+    if (newBubble.x < hitBubble.x) {
+      //   if (isOffsetRow && !isFirstCol) {
+      //     col = hitBubble.col - 1;
+      //   }
+      // if bubble is hit at the right-bottom corner
+    } else {
+      //   if (!isOffsetRow && !isLastCol) {
+      col = hitBubble.col + 1;
+      //   }
+    }
+
+    newBubble.col = col;
+    newBubble.row = row;
+    newBubble.isOffset = !isOffsetRow;
+
+    // insert new bubble into the bubbles array if it exists
+    if (this.bubbles[row]) {
+      const targetBubble = this.bubbles[row][col];
+      //   if (targetBubble !== null) {
+      //     this.handleCollision(targetBubble, newBubble);
+      //     return;
+      //   }
+      if (targetBubble !== null) {
+        console.log("targetBubble", targetBubble);
+        return;
+      }
+      this.bubbles[row][col] = newBubble;
+
+      // create new row if it doesn't exist
+    } else {
+      const isNewRowOffset = !isOffsetRow;
+      const newRowLength = isNewRowOffset
+        ? this.view.maxCols - 1
+        : this.view.maxCols;
+      const newRow = Array(newRowLength).fill(null);
+      newRow[col] = newBubble;
+      this.bubbles.push(newRow);
+    }
   }
 }
 

@@ -16,7 +16,7 @@ class GameView implements Controls {
   public mousePosY: number;
   public maxRows: number;
   public maxCols: number;
-  private bubbleMargin: number;
+  public bubbleMargin: number;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -88,7 +88,7 @@ class GameView implements Controls {
     this.bubbleMargin = bubbleRadius * 0.15;
   }
 
-  draw(bubbles: Bubble[][], shooter: Shooter): void {
+  draw(bubbles: (Bubble | null)[][], shooter: Shooter): void {
     this.shooter = shooter;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.drawBubble(this.shooter);
@@ -105,6 +105,14 @@ class GameView implements Controls {
     this.ctx.arc(bubble.x, bubble.y, this.radius, 0, Math.PI * 2);
     this.ctx.fillStyle = bubble.color;
     this.ctx.fill();
+    // draw number of row inside the bubble
+
+    this.ctx.font = "20px Arial";
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+    // make the text color black
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText(`${bubble.col}`, bubble.x, bubble.y, this.radius * 2);
     this.ctx.closePath();
   }
 
@@ -117,10 +125,13 @@ class GameView implements Controls {
     this.ctx.stroke();
   }
 
-  drawBubbles(bubbles: Bubble[][]): void {
+  drawBubbles(bubbles: (Bubble | null)[][]): void {
     for (let row = bubbles.length - 1; row >= 0; row--) {
       for (let col = 0; col < bubbles[row].length; col++) {
         const bubble = bubbles[row][col];
+        if (!bubble) {
+          continue;
+        }
         let x =
           col * (this.radius * 2 + this.bubbleMargin) +
           this.radius +
@@ -133,6 +144,8 @@ class GameView implements Controls {
         const y = this.radius + row * (this.radius * 2 + this.bubbleMargin);
 
         bubble.setPos(x, y);
+        bubble.row = row;
+        bubble.col = col;
 
         this.drawBubble(bubble);
       }

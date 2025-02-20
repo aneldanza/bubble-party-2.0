@@ -28,6 +28,8 @@ class Shooter extends Bubble {
     this.x = x;
     this.y = y;
     this.color = color;
+    this.dx = 0;
+    this.dy = 0;
   }
 }
 
