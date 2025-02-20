@@ -22,7 +22,11 @@ class Game {
 
     this.view = new GameView(canvas, ctx, colors);
     this.shooter = new Shooter(this.getRandColor());
-    this.collisionManager = new CollisionManager(this.view, this.bubbles);
+    this.collisionManager = new CollisionManager(
+      this.view,
+      this.bubbles,
+      this.shooter
+    );
 
     this.bindEvents();
   }
@@ -37,7 +41,7 @@ class Game {
   animate(): void {
     if (!this.isOver) {
       this.shooter.move();
-      this.handleBorderCollision();
+      this.collisionManager.handleBorderCollision();
       this.view.draw(this.bubbles, this.shooter);
       this.detectCollision();
       requestAnimationFrame(this.animate.bind(this));
@@ -71,29 +75,6 @@ class Game {
       row.push(bubble);
     }
     this.bubbles.unshift(row);
-  }
-
-  handleBorderCollision(): void {
-    // check if shooter hits the left or right border
-    if (
-      this.shooter.x - this.view.radius < 0 ||
-      this.shooter.x + this.view.radius > this.view.canvas.width
-    ) {
-      // reverse the direction of the shooter
-      this.shooter.dx = -this.shooter.dx;
-    }
-
-    // check if shooter hits the bottom border
-    if (this.shooter.y + this.view.radius > this.view.canvas.height) {
-      // reverse the direction of the shooter
-      this.shooter.dy = -this.shooter.dy;
-    }
-
-    // check if shooter hits the top border
-    if (this.shooter.y - this.view.radius < 0) {
-      // reverse the direction of the shooter
-      this.shooter.dy = -this.shooter.dy;
-    }
   }
 
   getRandColor(): string {
@@ -145,7 +126,12 @@ class Game {
           const newBubble = new Bubble(this.shooter.color, 0, 0);
           newBubble.setPos(this.shooter.x, this.shooter.y);
 
-          this.collisionManager.handleCollision(bubble, newBubble);
+          this.collisionManager.handleCollision(bubble);
+          const cluster = this.collisionManager.findBubbleCluster();
+          console.log(
+            "cluster",
+            cluster.map((b) => b.row + "," + b.col)
+          );
 
           // check if new bubble is too low
           if (newBubble.y + this.view.radius > this.view.canvas.height) {
