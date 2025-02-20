@@ -22,7 +22,7 @@ class Game {
     this.isOver = false;
 
     this.view = new GameView(canvas, ctx, colors);
-    this.shooter = new Shooter(this.getRandColor(), 8);
+    this.shooter = new Shooter(this.getRandColor(), 10);
     this.collisionManager = new CollisionManager(
       this.view,
       this.bubbles,
@@ -130,12 +130,33 @@ class Game {
 
           if (newBubble) {
             const cluster = this.findBubbleCluster(newBubble);
-            console.log(
-              "cluster",
-              cluster.map((b) => b.row + "," + b.col)
-            );
+
             if (cluster.length > 2) {
+              const clusterLength = cluster.length;
               this.dropBubbles(cluster);
+              const highestRowinCluster = Math.min(
+                ...cluster.map((b) => b.row)
+              );
+              console.log("highestRowinCluster", highestRowinCluster);
+
+              const floatingBubbles =
+                this.findFloatingBubbles(highestRowinCluster);
+              console.log(
+                "cluster",
+                cluster.map((b) => b.row + "," + b.col)
+              );
+
+              console.log(
+                "floatingBubbles",
+                floatingBubbles.map((b) => b.row + "," + b.col)
+              );
+
+              const bubblesToDropLength =
+                clusterLength + floatingBubbles.length;
+
+              this.dropBubbles(floatingBubbles);
+
+              console.log("bubblesToDropLength", bubblesToDropLength);
             }
 
             // check if new bubble is too low
@@ -149,11 +170,7 @@ class Game {
           }
 
           // prepare shooter for next move
-          this.shooter.reset(
-            this.view.canvas.width / 2,
-            this.view.canvas.height - this.view.radius,
-            this.getRandColor()
-          );
+          this.resetShooter();
 
           // return early if collision is detected
           return;
@@ -215,6 +232,61 @@ class Game {
     cluster.forEach((bubble) => {
       this.bubbles[bubble.row][bubble.col] = null;
     });
+  }
+
+  findFloatingBubbles(startRow: number): Bubble[] {
+    const visited: boolean[][] = this.bubbles.map((row) =>
+      row.map(() => false)
+    );
+    const queue: Bubble[] = [];
+    const floatingBubbles: Bubble[] = [];
+
+    // initialize queue with all of the bubbles in the top row
+    for (let col = 0; col < this.view.maxCols; col++) {
+      const bubble = this.bubbles[startRow][col];
+      if (bubble) {
+        queue.push(bubble);
+        visited[bubble.row][bubble.col] = true;
+      }
+    }
+
+    // BFS for all connected bubbles to the top row
+    while (queue.length) {
+      const bubble = queue.shift() as Bubble;
+
+      const neighbors = this.findNeighbors(bubble);
+      neighbors.forEach((neighbor) => {
+        if (neighbor && !visited[neighbor.row][neighbor.col]) {
+          visited[neighbor.row][neighbor.col] = true;
+          queue.push(neighbor);
+        }
+      });
+    }
+
+    // find all floating bubbles, excluding bubbles in the row with index 0
+    for (let row = 1; row < this.bubbles.length; row++) {
+      for (let col = 0; col < this.bubbles[row].length; col++) {
+        const bubble = this.bubbles[row][col];
+        if (bubble && !visited[row][col]) {
+          floatingBubbles.push(bubble);
+        }
+      }
+    }
+
+    return floatingBubbles;
+  }
+
+  hasNeighbors(bubble: Bubble): boolean {
+    const neighbors = this.findNeighbors(bubble);
+    return neighbors.length > 0;
+  }
+
+  resetShooter(): void {
+    this.shooter.reset(
+      this.view.canvas.width / 2,
+      this.view.canvas.height - this.view.radius,
+      this.getRandColor()
+    );
   }
 }
 
