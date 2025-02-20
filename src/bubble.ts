@@ -25,7 +25,7 @@ class Bubble {
     const dy = this.y - shooter.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    return distance < radius * 2;
+    return distance < radius * 1.8;
   }
 }
 
