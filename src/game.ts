@@ -10,7 +10,7 @@ class Game {
   private collisionManager: CollisionManager;
   private isOver: boolean;
   private shooter: Shooter;
-  private bubbles: (Bubble | null)[][];
+  private bubbles: Bubble[][];
   public moves: number;
   public score: Observer<number>;
 
@@ -47,7 +47,7 @@ class Game {
       this.shooter.move();
       this.collisionManager.handleBorderCollision();
       this.view.draw(this.bubbles, this.shooter);
-      this.detectCollision();
+      this.detectBubbleCollision();
       requestAnimationFrame(this.animate.bind(this));
     }
   }
@@ -67,13 +67,11 @@ class Game {
     const row = [];
     const isOffset = this.bubbles.length === 0 || !this.bubbles[0][0]!.isOffset;
 
-    console.log("isOffset", isOffset);
-
     const colNumber = isOffset ? this.view.maxCols - 1 : this.view.maxCols;
 
     for (let col = 0; col < colNumber; col++) {
       const color = this.getRandColor();
-      const bubble = new Bubble(color, col, this.bubbles.length);
+      const bubble = new Bubble("active", col, this.bubbles.length, color);
       bubble.isOffset = isOffset;
 
       row.push(bubble);
@@ -89,6 +87,11 @@ class Game {
 
   bindEvents(): void {
     document.addEventListener("click", () => this.handleMouseClick());
+    this.collisionManager.newBubbleFormed.subscribe(() => {
+      if (this.collisionManager.newBubbleFormed.value) {
+        this.handleNewBubble();
+      }
+    });
   }
 
   handleMouseClick(): void {
@@ -106,9 +109,9 @@ class Game {
     this.shooter.moves++;
 
     // add a new row of bubbles after 5 moves
-    if (this.shooter.moves > 2) {
+    if (this.shooter.moves > 10) {
       this.shooter.moves = 0;
-      if (this.bubbles.length < this.view.maxRows) {
+      if (this.bubbles.length < this.view.maxRows - 1) {
         setTimeout(() => {
           this.addRow();
         }, 1000);
@@ -119,60 +122,64 @@ class Game {
     }
   }
 
-  detectCollision(): void {
+  handleNewBubble(): void {
+    const newBubble = this.collisionManager.newBubble;
+
+    if (newBubble) {
+      const cluster = this.findBubbleCluster(newBubble);
+
+      if (cluster.length > 2) {
+        const clusterLength = cluster.length;
+        this.dropBubbles(cluster);
+
+        const floatingBubbles = this.findFloatingBubbles();
+
+        console.log(
+          "cluster",
+          cluster.map((b) => b.row + "," + b.col)
+        );
+
+        console.log(
+          "floatingBubbles",
+          floatingBubbles.map((b) => b.row + "," + b.col)
+        );
+
+        const bubblesToDropLength = clusterLength + floatingBubbles.length;
+
+        this.dropBubbles(floatingBubbles);
+
+        console.log("bubblesToDropLength", bubblesToDropLength);
+        this.score.value += bubblesToDropLength;
+      }
+
+      // check if new bubble is too low
+      if (newBubble.y + this.view.radius > this.view.canvas.height) {
+        this.isOver = true;
+        console.log("Game Over");
+        return;
+      }
+    } else {
+      throw new Error("new bubble was not created on collision");
+    }
+
+    // prepare shooter for next move
+    this.resetShooter();
+
+    // reset new bubble flag
+    this.collisionManager.newBubbleFormed.value = false;
+  }
+
+  detectBubbleCollision(): void {
     this.bubbles.forEach((row) => {
       row.forEach((bubble) => {
-        if (!bubble) {
+        if (bubble.status === "inactive") {
           return;
         }
         if (bubble.isHit(this.shooter, this.view.radius)) {
           console.log("hit");
 
-          this.collisionManager.handleCollision(bubble);
-          const newBubble = this.collisionManager.newBubble;
+          this.collisionManager.handleBubbleCollision(bubble);
 
-          if (newBubble) {
-            const cluster = this.findBubbleCluster(newBubble);
-
-            if (cluster.length > 2) {
-              const clusterLength = cluster.length;
-              this.dropBubbles(cluster);
-
-              const floatingBubbles = this.findFloatingBubbles();
-
-              console.log(
-                "cluster",
-                cluster.map((b) => b.row + "," + b.col)
-              );
-
-              console.log(
-                "floatingBubbles",
-                floatingBubbles.map((b) => b.row + "," + b.col)
-              );
-
-              const bubblesToDropLength =
-                clusterLength + floatingBubbles.length;
-
-              this.dropBubbles(floatingBubbles);
-
-              console.log("bubblesToDropLength", bubblesToDropLength);
-              this.score.value += bubblesToDropLength;
-            }
-
-            // check if new bubble is too low
-            if (newBubble.y + this.view.radius > this.view.canvas.height) {
-              this.isOver = true;
-              console.log("Game Over");
-              return;
-            }
-          } else {
-            throw new Error("new bubble was not created on collision");
-          }
-
-          // prepare shooter for next move
-          this.resetShooter();
-
-          // return early if collision is detected
           return;
         }
       });
@@ -218,7 +225,8 @@ class Game {
           row < 0 ||
           col < 0 ||
           !this.bubbles[row] ||
-          !this.bubbles[row][col]
+          !this.bubbles[row][col] ||
+          this.bubbles[row][col].status === "inactive"
         ) {
           return null;
         }
@@ -230,7 +238,7 @@ class Game {
 
   dropBubbles(cluster: Bubble[]): void {
     cluster.forEach((bubble) => {
-      this.bubbles[bubble.row][bubble.col] = null;
+      this.bubbles[bubble.row][bubble.col].nullify();
     });
   }
 
@@ -242,9 +250,9 @@ class Game {
     const floatingBubbles: Bubble[] = [];
 
     // initialize queue with all of the bubbles in the top row
-    for (let col = 0; col < this.view.maxCols; col++) {
+    for (let col = 0; col < this.bubbles[0].length; col++) {
       const bubble = this.bubbles[0][col];
-      if (bubble) {
+      if (bubble.status === "active") {
         queue.push(bubble);
         visited[bubble.row][bubble.col] = true;
       }
@@ -267,7 +275,7 @@ class Game {
     for (let row = 1; row < this.bubbles.length; row++) {
       for (let col = 0; col < this.bubbles[row].length; col++) {
         const bubble = this.bubbles[row][col];
-        if (bubble && !visited[row][col]) {
+        if (bubble.status === "active" && !visited[row][col]) {
           floatingBubbles.push(bubble);
         }
       }

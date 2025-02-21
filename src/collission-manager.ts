@@ -1,18 +1,21 @@
 import Bubble from "./bubble";
 import GameView from "./game-view";
 import Shooter from "./shooter";
+import Observer from "./observer";
 
 class CollisionManager {
   private view: GameView;
-  private bubbles: (Bubble | null)[][] = [];
+  private bubbles: Bubble[][] = [];
   private shooter: Shooter;
   private _newBubble: Bubble;
+  public newBubbleFormed: Observer<boolean>;
 
-  constructor(view: GameView, bubbles: (Bubble | null)[][], shooter: Shooter) {
+  constructor(view: GameView, bubbles: Bubble[][], shooter: Shooter) {
     this.view = view;
     this.bubbles = bubbles;
     this.shooter = shooter;
-    this._newBubble = new Bubble("transparent", 0, 0);
+    this._newBubble = new Bubble("inactive", 0, 0);
+    this.newBubbleFormed = new Observer<boolean>(false);
   }
 
   get newBubble(): Bubble | null {
@@ -41,14 +44,47 @@ class CollisionManager {
     // check if shooter hits the top border
     if (this.shooter.y - this.view.radius < 0) {
       // reverse the direction of the shooter
-      this.shooter.dy = -this.shooter.dy;
+      this.handleTopBorderCollision();
     }
   }
 
-  handleCollision(hitBubble: Bubble): void {
+  handleTopBorderCollision(): void {
+    console.log("top border collision");
+    // create a new bubble
+    this._newBubble = new Bubble("active", 0, 0, this.shooter.color);
+    this._newBubble.setPos(this.shooter.x, this.shooter.y);
+
+    // calculate x and y positions for each bubble in the first row
+    const row = this.bubbles[0];
+    const x = this._newBubble.x;
+
+    // check if the first row is offset
+    const isOffset = row.length < this.view.maxCols;
+
+    // calculate the column index for the new bubble
+    const bubbleWidthWithMargin = this.view.radius * 2 + this.view.bubbleMargin;
+    let col = Math.floor(x / bubbleWidthWithMargin);
+    if (isOffset) {
+      col = Math.floor((x - this.view.radius) / bubbleWidthWithMargin);
+    }
+
+    // insert the new bubble into the bubbles array
+    const targetBubbleSpot = this.bubbles[0][col];
+    if (targetBubbleSpot && targetBubbleSpot.status === "inactive") {
+      this.setBubbleParams(0, col, isOffset);
+      row[col] = this._newBubble;
+    } else {
+      this.handleBubbleCollision(targetBubbleSpot);
+    }
+
+    // notify observers that a new bubble has been formed
+    this.newBubbleFormed.value = true;
+  }
+
+  handleBubbleCollision(hitBubble: Bubble): void {
     const isOffsetRow = hitBubble.isOffset;
     const isFirstCol = hitBubble.col === 0;
-    this._newBubble = new Bubble(this.shooter.color, 0, 0);
+    this._newBubble = new Bubble("active", 0, 0, this.shooter.color);
     this._newBubble.setPos(this.shooter.x, this.shooter.y);
 
     const isLastCol = isOffsetRow
@@ -62,9 +98,14 @@ class CollisionManager {
     } else if (this.isBottomCollision(hitBubble)) {
       this.handleBottomCollision(hitBubble, isOffsetRow, isFirstCol);
     } else {
-      console.log("no side or bottom collision");
-      debugger;
+      console.warn(
+        "no side or bottom collision, defaulting to bottom collision handler"
+      );
+      this.handleBottomCollision(hitBubble, isOffsetRow, isFirstCol);
     }
+
+    // notify observers that a new bubble has been formed
+    this.newBubbleFormed.value = true;
   }
 
   isLeftCollision(hitBubble: Bubble): boolean {
@@ -118,12 +159,17 @@ class CollisionManager {
     // insert new bubble into the bubbles array if it exists
     if (this.bubbles[row]) {
       const targetBubble = this.bubbles[row][col];
-      if (targetBubble !== null) {
-        this.handleCollision(targetBubble);
-        return;
-      }
+      if (targetBubble) {
+        if (targetBubble.status === "active") {
+          this.handleBubbleCollision(targetBubble);
+          return;
+        }
 
-      this.bubbles[row][col] = this._newBubble;
+        this.bubbles[row][col] = this._newBubble;
+      } else {
+        console.log("no target bubble at position " + row + "," + col);
+        debugger;
+      }
 
       // create new row if it doesn't exist
     } else {
@@ -131,7 +177,14 @@ class CollisionManager {
       const newRowLength = isNewRowOffset
         ? this.view.maxCols - 1
         : this.view.maxCols;
-      const newRow = Array(newRowLength).fill(null);
+      const newRow = Array(newRowLength)
+        .fill(new Bubble("inactive", 0, 0))
+        .map((bubble, index) => {
+          bubble.col = index;
+          bubble.row = row;
+          bubble.isOffset = isNewRowOffset;
+          return bubble;
+        });
       newRow[col] = this._newBubble;
       this.bubbles.push(newRow);
     }

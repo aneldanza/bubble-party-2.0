@@ -1,5 +1,7 @@
 import Shooter from "./shooter";
 
+type BubbleStatus = "active" | "inactive";
+
 class Bubble {
   public x!: number;
   public y!: number;
@@ -7,8 +9,15 @@ class Bubble {
   public col: number;
   public row: number;
   public isOffset: boolean;
+  public status: BubbleStatus = "inactive";
 
-  constructor(color: string, col: number, row: number) {
+  constructor(
+    status: BubbleStatus,
+    col: number,
+    row: number,
+    color: string = "transparent"
+  ) {
+    this.status = status;
     this.color = color;
     this.col = col;
     this.row = row;
@@ -26,6 +35,16 @@ class Bubble {
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     return distance < radius * 1.8;
+  }
+
+  nullify(): void {
+    this.color = "transparent";
+    this.status = "inactive";
+  }
+
+  activate(color: string): void {
+    this.color = color;
+    this.status = "active";
   }
 }
 

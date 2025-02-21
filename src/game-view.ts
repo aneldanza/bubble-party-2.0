@@ -88,7 +88,7 @@ class GameView implements Controls {
     this.bubbleMargin = bubbleRadius * 0.15;
   }
 
-  draw(bubbles: (Bubble | null)[][], shooter: Shooter): void {
+  draw(bubbles: Bubble[][], shooter: Shooter): void {
     this.shooter = shooter;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.drawBubble(this.shooter);
@@ -113,6 +113,15 @@ class GameView implements Controls {
     // make the text color black
     this.ctx.fillStyle = "black";
     this.ctx.fillText(`${bubble.col}`, bubble.x, bubble.y, this.radius * 2);
+
+    // draw border
+    if (bubble.status === "active") {
+      this.ctx.strokeStyle = bubble.color;
+    } else {
+      this.ctx.strokeStyle = "black";
+    }
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
     this.ctx.closePath();
   }
 
@@ -125,7 +134,7 @@ class GameView implements Controls {
     this.ctx.stroke();
   }
 
-  drawBubbles(bubbles: (Bubble | null)[][]): void {
+  drawBubbles(bubbles: Bubble[][]): void {
     for (let row = bubbles.length - 1; row >= 0; row--) {
       for (let col = 0; col < bubbles[row].length; col++) {
         const bubble = bubbles[row][col];
