@@ -55,6 +55,8 @@ class GameView implements Controls {
     this.maxRows = Math.floor(
       this.canvas.height / (bubbleDiameter + this.bubbleMargin)
     );
+
+    console.log("max rows " + this.maxRows);
   }
 
   resizeCanvas(): void {
@@ -112,7 +114,7 @@ class GameView implements Controls {
     this.ctx.textBaseline = "middle";
     // make the text color black
     this.ctx.fillStyle = "black";
-    this.ctx.fillText(`${bubble.col}`, bubble.x, bubble.y, this.radius * 2);
+    this.ctx.fillText(`${bubble.row}`, bubble.x, bubble.y, this.radius * 2);
 
     // draw border
     if (bubble.status === "active") {

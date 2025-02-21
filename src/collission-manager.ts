@@ -101,7 +101,7 @@ class CollisionManager {
       console.warn(
         "no side or bottom collision, defaulting to bottom collision handler"
       );
-      this.handleBottomCollision(hitBubble, isOffsetRow, isFirstCol);
+      return;
     }
 
     // notify observers that a new bubble has been formed
