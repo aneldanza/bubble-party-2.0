@@ -164,8 +164,9 @@ class GameView implements Controls {
   }
 
   handleMouseMove(e: MouseEvent): void {
-    this.mousePosX = e.x - this.canvas.offsetLeft;
-    this.mousePosY = e.y - this.canvas.offsetTop;
+    const rect = this.canvas.getBoundingClientRect();
+    this.mousePosX = e.clientX - rect.left;
+    this.mousePosY = e.clientY - rect.top;
   }
 }
 
