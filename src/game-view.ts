@@ -1,5 +1,6 @@
 import Shooter from "./shooter";
 import Bubble from "./bubble";
+import Observer from "./observer";
 
 interface Controls {
   canvas: HTMLCanvasElement;
@@ -17,6 +18,7 @@ class GameView implements Controls {
   public maxRows: number;
   public maxCols: number;
   public bubbleMargin: number;
+  public isOver: Observer<boolean>;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -31,6 +33,7 @@ class GameView implements Controls {
     this.maxCols = 0;
     this.maxRows = 0;
     this.bubbleMargin = 3;
+    this.isOver = new Observer<boolean>(false);
 
     this.setBubbleRadius();
 
@@ -114,7 +117,7 @@ class GameView implements Controls {
     this.ctx.textBaseline = "middle";
     // make the text color black
     this.ctx.fillStyle = "black";
-    this.ctx.fillText(`${bubble.row}`, bubble.x, bubble.y, this.radius * 2);
+    this.ctx.fillText(`${bubble.col}`, bubble.x, bubble.y, this.radius * 2);
 
     // draw border
     if (bubble.status === "active") {
@@ -159,6 +162,16 @@ class GameView implements Controls {
         bubble.col = col;
 
         this.drawBubble(bubble);
+
+        // check if bubble is touching the bottom border
+        if (
+          bubble.status === "active" &&
+          bubble.y + this.radius >= this.canvas.height
+        ) {
+          console.log("TRIGGER GAME OVER FROM VIEW");
+          this.isOver.value = true;
+          return;
+        }
       }
     }
   }

@@ -6,9 +6,9 @@ import CollisionManager from "./collission-manager";
 import { OFFSET_RELATIVE_POSITIONS, RELATIVE_POSITIONS } from "./constants";
 
 class Game {
-  private view: GameView;
+  public view: GameView;
   private collisionManager: CollisionManager;
-  private isOver: Observer<boolean>;
+
   private shooter: Shooter;
   private bubbles: Bubble[][];
   public moves: number;
@@ -21,11 +21,10 @@ class Game {
   ) {
     this.bubbles = [];
     this.moves = 0;
-    this.isOver = new Observer<boolean>(false);
     this.score = new Observer<number>(0);
 
     this.view = new GameView(canvas, ctx, colors);
-    this.shooter = new Shooter(this.getRandColor(), 10);
+    this.shooter = new Shooter(this.getRandColor(), 30);
     this.collisionManager = new CollisionManager(
       this.view,
       this.bubbles,
@@ -39,7 +38,7 @@ class Game {
     this.view.init(this.shooter);
     this.animate();
     this.addRow();
-    // this.fillBubbles();
+    this.view.isOver.value = false;
   }
 
   gameOver(): void {
@@ -49,17 +48,12 @@ class Game {
         this.handleNewBubble();
       }
     });
-  }
 
-  checkGameOver(): boolean {
-    return (
-      this.bubbles.length > this.view.maxRows &&
-      this.bubbles[this.bubbles.length - 1].some((b) => b.status === "active")
-    );
+    document.removeEventListener("click", () => this.handleMouseClick());
   }
 
   animate(): void {
-    if (!this.isOver.value) {
+    if (!this.view.isOver.value) {
       this.shooter.move();
       this.collisionManager.handleBorderCollision();
       this.view.draw(this.bubbles, this.shooter);
@@ -71,7 +65,7 @@ class Game {
 
   fillBubbles(): void {
     const interval = setInterval(() => {
-      if (this.isOver.value) {
+      if (this.view.isOver.value) {
         clearInterval(interval);
         return;
       }
@@ -94,10 +88,6 @@ class Game {
       row.push(bubble);
     }
     this.bubbles.unshift(row);
-
-    if (this.checkGameOver()) {
-      this.isOver.value = true;
-    }
   }
 
   getRandColor(): string {
@@ -108,14 +98,15 @@ class Game {
 
   bindEvents(): void {
     document.addEventListener("click", () => this.handleMouseClick());
+
     this.collisionManager.newBubbleFormed.subscribe(() => {
       if (this.collisionManager.newBubbleFormed.value) {
         this.handleNewBubble();
       }
     });
 
-    this.isOver.subscribe(() => {
-      if (this.isOver.value) {
+    this.view.isOver.subscribe(() => {
+      if (this.view.isOver.value) {
         this.gameOver();
       }
     });
@@ -138,18 +129,14 @@ class Game {
     // add a new row of bubbles after 5 moves
     if (this.shooter.moves > 3) {
       this.shooter.moves = 0;
-      setTimeout(() => {
-        this.addRow();
-      }, 1000);
+      // setTimeout(() => {
+      this.addRow();
+      // }, 1000);
     }
   }
 
   handleNewBubble(): void {
     const newBubble = this.collisionManager.newBubble;
-
-    if (this.checkGameOver()) {
-      this.isOver.value = true;
-    }
 
     if (newBubble) {
       const cluster = this.findBubbleCluster(newBubble);
@@ -176,10 +163,6 @@ class Game {
 
         console.log("bubblesToDropLength", bubblesToDropLength);
         this.score.value += bubblesToDropLength;
-
-        if (this.checkGameOver()) {
-          this.isOver.value = true;
-        }
       }
     } else {
       throw new Error("new bubble was not created on collision");

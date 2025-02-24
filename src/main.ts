@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  game.isOver.subscribe((value) => {
+  game.view.isOver.subscribe((value) => {
     if (value) {
       gameOverElement.style.display = "flex";
     }
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   restartButton.addEventListener("click", () => {
     game.start();
-    gameOverElement.style.display = "hidden";
+    gameOverElement.style.display = "none";
   });
 
   game.start();
