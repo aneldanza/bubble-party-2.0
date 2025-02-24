@@ -9,9 +9,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const game = new Game(canvas, ctx, COLORS);
 
-  const score = document.getElementById("score-value") as HTMLSpanElement;
+  const scoreElements = document.getElementsByClassName("score-value");
+  const gameOverElement = document.getElementById("game-over")!;
+
   game.score.subscribe((value) => {
-    score.textContent = value.toString();
+    for (let i = 0; i < scoreElements.length; i++) {
+      scoreElements[i].textContent = value.toString();
+    }
+  });
+
+  game.isOver.subscribe((value) => {
+    if (value) {
+      gameOverElement.style.display = "flex";
+    }
+  });
+
+  const restartButton = document.getElementById("play-again")!;
+
+  restartButton.addEventListener("click", () => {
+    game.start();
+    gameOverElement.style.display = "hidden";
   });
 
   game.start();
