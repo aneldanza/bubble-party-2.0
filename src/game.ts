@@ -13,6 +13,8 @@ class Game {
   private bubbles: Bubble[][];
   public moves: number;
   public score: Observer<number>;
+  private handleMouseClickRef: () => void;
+  private canvas: HTMLCanvasElement;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -22,6 +24,7 @@ class Game {
     this.bubbles = [];
     this.moves = 0;
     this.score = new Observer<number>(0);
+    this.canvas = canvas;
 
     this.view = new GameView(canvas, ctx, colors);
     this.shooter = new Shooter(this.getRandColor(), 30);
@@ -31,14 +34,23 @@ class Game {
       this.shooter
     );
 
+    this.handleMouseClickRef = this.handleMouseClick.bind(this);
     this.bindEvents();
+  }
+
+  reset(): void {
+    this.resetShooter();
+    this.bubbles.forEach((row) => row.forEach((bubble) => bubble.nullify()));
+    this.score.value = 0;
+    this.moves = 0;
+    this.view.isOver.value = false;
   }
 
   start(): void {
     this.view.init(this.shooter);
     this.animate();
     this.addRow();
-    this.view.isOver.value = false;
+    this.canvas.addEventListener("click", this.handleMouseClickRef);
   }
 
   gameOver(): void {
@@ -49,7 +61,9 @@ class Game {
       }
     });
 
-    document.removeEventListener("click", () => this.handleMouseClick());
+    this.canvas.removeEventListener("click", this.handleMouseClickRef);
+
+    this.shooter.stop();
   }
 
   animate(): void {
@@ -97,8 +111,6 @@ class Game {
   }
 
   bindEvents(): void {
-    document.addEventListener("click", () => this.handleMouseClick());
-
     this.collisionManager.newBubbleFormed.subscribe(() => {
       if (this.collisionManager.newBubbleFormed.value) {
         this.handleNewBubble();
@@ -113,6 +125,7 @@ class Game {
   }
 
   handleMouseClick(): void {
+    console.log("CLICKED!");
     // calculate the direction of the shooter
     const dx = this.view.mousePosX - this.shooter.x;
     const dy = this.view.mousePosY - this.shooter.y;
@@ -129,9 +142,7 @@ class Game {
     // add a new row of bubbles after 5 moves
     if (this.shooter.moves > 3) {
       this.shooter.moves = 0;
-      // setTimeout(() => {
       this.addRow();
-      // }, 1000);
     }
   }
 
@@ -183,6 +194,9 @@ class Game {
         }
         if (bubble.isHit(this.shooter, this.view.radius)) {
           console.log("hit");
+
+          // stop the shooter
+          this.shooter.stop();
 
           this.collisionManager.handleBubbleCollision(bubble);
 
