@@ -118,13 +118,27 @@ class GameView implements Controls {
     this.shooter = shooter;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.drawBubble(this.shooter);
-    this.drawBubbles(bubbles);
-
     // Draw aim line only if shooter is not moving
     if (this.shooter.dx === 0 && this.shooter.dy === 0) {
       this.drawAimLine();
     }
+
+    this.drawBubble(this.shooter);
+    this.drawBubbles(bubbles);
+  }
+
+  addGradient(bubble: Bubble, bubbleRadius: number): void {
+    const gradient = this.ctx.createRadialGradient(
+      bubble.x - bubbleRadius / 4,
+      bubble.y - bubbleRadius / 4,
+      bubbleRadius / 10,
+      bubble.x,
+      bubble.y,
+      bubbleRadius
+    );
+    gradient.addColorStop(0, "white");
+    gradient.addColorStop(1, bubble.color);
+    this.ctx.fillStyle = gradient;
   }
 
   drawBubble(bubble: Bubble): void {
@@ -133,29 +147,29 @@ class GameView implements Controls {
     this.ctx.fillStyle = bubble.color;
 
     if (bubble.status === "active") {
-      // make bubble more stylish add gradient
-      const gradient = this.ctx.createRadialGradient(
-        bubble.x - this.radius / 4,
-        bubble.y - this.radius / 4,
-        this.radius / 10,
-        bubble.x,
-        bubble.y,
-        this.radius
-      );
-      gradient.addColorStop(0, "white");
-      gradient.addColorStop(1, bubble.color);
-      this.ctx.fillStyle = gradient;
+      this.addGradient(bubble, this.radius);
     }
     this.ctx.fill();
   }
 
   drawAimLine(): void {
-    this.ctx.beginPath();
-    this.ctx.setLineDash([5, 15]);
-    this.ctx.moveTo(this.shooter.x, this.shooter.y);
-    this.ctx.lineTo(this.mousePosX, this.mousePosY);
-    this.ctx.strokeStyle = this.shooter.color;
-    this.ctx.stroke();
+    const dx = this.mousePosX - this.shooter.x;
+    const dy = this.mousePosY - this.shooter.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const step = this.radius * 2; // Distance between each small bubble
+    const steps = Math.floor(distance / step);
+
+    for (let i = 0; i < steps; i++) {
+      const t = i / steps;
+      const x = this.shooter.x + t * dx;
+      const y = this.shooter.y + t * dy;
+
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, this.radius / 8, 0, Math.PI * 2); // Small bubble radius
+      this.ctx.fillStyle = this.shooter.color;
+
+      this.ctx.fill();
+    }
   }
 
   drawBubbles(bubbles: Bubble[][]): void {
