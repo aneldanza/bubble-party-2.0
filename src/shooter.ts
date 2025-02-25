@@ -5,6 +5,7 @@ class Shooter extends Bubble {
   public dy: number;
   public speed: number;
   public moves: number;
+  public hit: boolean;
 
   constructor(color: string, speed?: number) {
     super("active", 0, 0, color);
@@ -12,6 +13,7 @@ class Shooter extends Bubble {
     this.dy = 0;
     this.speed = speed || 7;
     this.moves = 0;
+    this.hit = false;
   }
 
   move(): void {
@@ -28,6 +30,12 @@ class Shooter extends Bubble {
     this.x = x;
     this.y = y;
     this.color = color;
+    this.dx = 0;
+    this.dy = 0;
+    this.hit = false;
+  }
+
+  stop(): void {
     this.dx = 0;
     this.dy = 0;
   }

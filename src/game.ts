@@ -24,10 +24,12 @@ class Game {
     this.bubbles = [];
     this.moves = 0;
     this.score = new Observer<number>(0);
+
     this.canvas = canvas;
 
     this.view = new GameView(canvas, ctx, colors);
-    this.shooter = new Shooter(this.getRandColor(), 30);
+    this.shooter = new Shooter(this.view.getRandColor(), 10);
+
     this.collisionManager = new CollisionManager(
       this.view,
       this.bubbles,
@@ -69,9 +71,12 @@ class Game {
   animate(): void {
     if (!this.view.isOver.value) {
       this.shooter.move();
+
       this.collisionManager.handleBorderCollision();
       this.view.draw(this.bubbles, this.shooter);
-      this.detectBubbleCollision();
+      if (!(this.shooter.dx === 0 && this.shooter.dy === 0)) {
+        this.detectBubbleCollision();
+      }
 
       requestAnimationFrame(this.animate.bind(this));
     }
@@ -95,19 +100,19 @@ class Game {
     const colNumber = isOffset ? this.view.maxCols - 1 : this.view.maxCols;
 
     for (let col = 0; col < colNumber; col++) {
-      const color = this.getRandColor();
-      const bubble = new Bubble("active", col, this.bubbles.length, color);
+      const color = this.view.getRandColor();
+      const bubble = new Bubble(
+        "active",
+        col,
+        this.bubbles.length,
+        color,
+        this.shooter
+      );
       bubble.isOffset = isOffset;
 
       row.push(bubble);
     }
     this.bubbles.unshift(row);
-  }
-
-  getRandColor(): string {
-    return this.view.colors[
-      Math.floor(Math.random() * this.view.colors.length)
-    ];
   }
 
   bindEvents(): void {
@@ -125,6 +130,7 @@ class Game {
   }
 
   handleMouseClick(): void {
+    console.clear();
     console.log("CLICKED!");
     // calculate the direction of the shooter
     const dx = this.view.mousePosX - this.shooter.x;
@@ -132,6 +138,10 @@ class Game {
     const length = Math.sqrt(dx * dx + dy * dy);
 
     this.shooter.setDirection(
+      // dx,
+      // dy
+      // dx / (this.view.radius * 2),
+      // dy / (this.view.radius * 2)
       (dx / length) * this.shooter.speed,
       (dy / length) * this.shooter.speed
     );
@@ -179,31 +189,54 @@ class Game {
       throw new Error("new bubble was not created on collision");
     }
 
-    // prepare shooter for next move
     this.resetShooter();
 
     // reset new bubble flag
     this.collisionManager.newBubbleFormed.value = false;
   }
 
-  detectBubbleCollision(): void {
+  getHitBubbles(): Bubble[] {
+    const shooterX = this.shooter.x;
+    const shooterY = this.shooter.y;
+
+    const hitBubbles: Bubble[] = [];
+
     this.bubbles.forEach((row) => {
       row.forEach((bubble) => {
         if (bubble.status === "inactive") {
           return;
         }
-        if (bubble.isHit(this.shooter, this.view.radius)) {
-          console.log("hit");
 
-          // stop the shooter
+        if (bubble.isHit(shooterX, shooterY, this.view.radius)) {
+          hitBubbles.push(bubble);
           this.shooter.stop();
-
-          this.collisionManager.handleBubbleCollision(bubble);
 
           return;
         }
       });
     });
+
+    return hitBubbles;
+  }
+
+  detectBubbleCollision(): void {
+    const hitBubbles: Bubble[] = this.getHitBubbles();
+    if (hitBubbles.length) {
+      console.log(
+        "hitBubbles",
+        hitBubbles.map((b) => b.row + "," + b.col)
+      );
+
+      const hitBubble = hitBubbles[0];
+      const hitSide = this.collisionManager.determineHitSide(hitBubble);
+
+      console.log("hitSide", hitSide);
+      console.log("hitBubble", hitBubble.row, hitBubble.col);
+
+      this.collisionManager.handleBubbleCollision(hitBubble, hitSide);
+
+      this.resetShooter();
+    }
   }
 
   findBubbleCluster(bubble: Bubble): Bubble[] {
@@ -308,7 +341,7 @@ class Game {
     this.shooter.reset(
       this.view.canvas.width / 2,
       this.view.canvas.height - this.view.radius,
-      this.getRandColor()
+      this.view.getRandColor()
     );
   }
 }

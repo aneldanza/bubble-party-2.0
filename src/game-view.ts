@@ -10,7 +10,7 @@ interface Controls {
 class GameView implements Controls {
   public colors: string[];
   public canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;
+  public ctx: CanvasRenderingContext2D;
   public radius!: number;
   private shooter!: Shooter;
   public mousePosX: number;
@@ -70,6 +70,7 @@ class GameView implements Controls {
   bindEvents(): void {
     window.addEventListener("resize", this.resizeCanvas.bind(this));
     document.addEventListener("mousemove", (e) => this.handleMouseMove(e));
+    document.addEventListener("touchmove", (e) => this.handleTouchMove(e));
   }
 
   setBubbleRadius(): void {
@@ -93,9 +94,30 @@ class GameView implements Controls {
     this.bubbleMargin = bubbleRadius * 0.15;
   }
 
+  // draw grid on canvas with 10px spacing
+  drawGrid(): void {
+    this.ctx.beginPath();
+    this.ctx.strokeStyle = "gray";
+    this.ctx.lineWidth = 0.5;
+    this.ctx.setLineDash([10, 0]);
+
+    for (let x = 0; x < this.canvas.width; x += this.radius) {
+      this.ctx.moveTo(x, 0);
+      this.ctx.lineTo(x, this.canvas.height);
+    }
+
+    for (let y = 0; y < this.canvas.height; y += this.radius) {
+      this.ctx.moveTo(0, y);
+      this.ctx.lineTo(this.canvas.width, y);
+    }
+
+    this.ctx.stroke();
+  }
+
   draw(bubbles: Bubble[][], shooter: Shooter): void {
     this.shooter = shooter;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.drawGrid();
     this.drawBubble(this.shooter);
     this.drawBubbles(bubbles);
 
@@ -112,11 +134,11 @@ class GameView implements Controls {
     this.ctx.fill();
     // draw number of row inside the bubble
 
-    this.ctx.font = "20px Arial";
+    this.ctx.font = "12px Arial";
     this.ctx.textAlign = "center";
-    this.ctx.textBaseline = "middle";
+    this.ctx.textBaseline = "ideographic";
     // make the text color black
-    this.ctx.fillStyle = "black";
+    this.ctx.fillStyle = "white";
     this.ctx.fillText(`${bubble.col}`, bubble.x, bubble.y, this.radius * 2);
 
     // draw border
@@ -125,6 +147,14 @@ class GameView implements Controls {
     } else {
       this.ctx.strokeStyle = "black";
     }
+
+    // draw a dot for x and y positions
+    this.ctx.beginPath();
+    this.ctx.arc(bubble.x, bubble.y, 2, 0, Math.PI * 2);
+    this.ctx.fillStyle = "black";
+    this.ctx.fill();
+    this.ctx.closePath();
+
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
     this.ctx.closePath();
@@ -176,10 +206,20 @@ class GameView implements Controls {
     }
   }
 
+  getRandColor(): string {
+    return this.colors[Math.floor(Math.random() * this.colors.length)];
+  }
+
   handleMouseMove(e: MouseEvent): void {
     const rect = this.canvas.getBoundingClientRect();
     this.mousePosX = e.clientX - rect.left;
     this.mousePosY = e.clientY - rect.top;
+  }
+
+  handleTouchMove(e: TouchEvent): void {
+    const rect = this.canvas.getBoundingClientRect();
+    this.mousePosX = e.touches[0].clientX - rect.left;
+    this.mousePosY = e.touches[0].clientY - rect.top;
   }
 }
 

@@ -74,16 +74,46 @@ class CollisionManager {
       this.setBubbleParams(0, col, isOffset);
       row[col] = this._newBubble;
     } else {
-      this.handleBubbleCollision(targetBubbleSpot);
+      // this.handleBubbleCollision(targetBubbleSpot);
+      console.warn("bubble already exists at position 0," + col);
+      debugger;
     }
 
     // notify observers that a new bubble has been formed
     this.newBubbleFormed.value = true;
   }
 
-  handleBubbleCollision(hitBubble: Bubble): void {
+  determineHitSide(
+    hitBubble: Bubble
+  ): "bottom-left" | "bottom-right" | "right" | "left" {
+    return (
+      this.isBottomCollision(this.shooter.x, this.shooter.y, hitBubble) ||
+      this.isSideCollision(this.shooter.x, hitBubble)
+    );
+  }
+
+  isBottomCollision(
+    shooterX: number,
+    shooterY: number,
+    hitBubble: Bubble
+  ): "bottom-left" | "bottom-right" | "" {
+    if (shooterY > hitBubble.y + this.view.radius / 2) {
+      return shooterX < hitBubble.x ? "bottom-left" : "bottom-right";
+    }
+    return "";
+  }
+
+  isSideCollision(shooterX: number, hitBubble: Bubble): "left" | "right" {
+    return shooterX > hitBubble.x ? "right" : "left";
+  }
+
+  handleBubbleCollision(
+    hitBubble: Bubble,
+    hitSide: "bottom-left" | "bottom-right" | "left" | "right"
+  ): void {
     const isOffsetRow = hitBubble.isOffset;
     const isFirstCol = hitBubble.col === 0;
+
     this._newBubble = new Bubble("active", 0, 0, this.shooter.color);
     this._newBubble.setPos(this.shooter.x, this.shooter.y);
 
@@ -91,59 +121,57 @@ class CollisionManager {
       ? hitBubble.col + 1 === this.view.maxCols - 1
       : hitBubble.col + 1 === this.view.maxCols;
 
-    if (this.isLeftCollision(hitBubble)) {
-      this.handleLeftCollision(hitBubble, isFirstCol);
-    } else if (this.isRightCollision(hitBubble)) {
-      this.handleRightCollision(hitBubble, isLastCol);
-    } else if (this.isBottomCollision(hitBubble)) {
-      this.handleBottomCollision(hitBubble, isOffsetRow, isFirstCol);
-    } else {
-      console.warn(
-        "no side or bottom collision, defaulting to bottom collision handler"
+    if (hitSide === "bottom-left" || hitSide === "bottom-right") {
+      this.handleBottomCollision(
+        hitBubble,
+        isOffsetRow,
+        isFirstCol,
+        isLastCol,
+        hitSide
       );
-      return;
+    } else if (hitSide === "left") {
+      this.handleLeftCollision(hitBubble, isFirstCol, isLastCol);
+    } else if (hitSide === "right") {
+      this.handleRightCollision(hitBubble, isLastCol);
     }
 
     // notify observers that a new bubble has been formed
     this.newBubbleFormed.value = true;
   }
 
-  isLeftCollision(hitBubble: Bubble): boolean {
+  isValidAndAvailablePosition(row: number, col: number): boolean {
     return (
-      this._newBubble.x < hitBubble.x &&
-      this._newBubble.y > hitBubble.y - this.view.radius &&
-      this._newBubble.y < hitBubble.y + this.view.radius
+      this.bubbles[row] &&
+      this.bubbles[row][col] &&
+      this.bubbles[row][col].status === "inactive"
     );
   }
 
-  isRightCollision(hitBubble: Bubble): boolean {
-    return (
-      this._newBubble.x > hitBubble.x &&
-      this._newBubble.y > hitBubble.y - this.view.radius &&
-      this._newBubble.y < hitBubble.y + this.view.radius
-    );
-  }
-
-  isBottomCollision(hitBubble: Bubble): boolean {
-    return (
-      this._newBubble.y > hitBubble.y &&
-      this._newBubble.y <
-        hitBubble.y + this.view.radius * 2 + this.view.bubbleMargin / 2
-    );
+  handleInvalidPosition(row: number, col: number): void {
+    const targetBubble = this.bubbles[row][col];
+    if (targetBubble) {
+      if (targetBubble.status === "active") {
+        console.error(
+          "can't insert new bubble at occupied position " + row + "," + col
+        );
+      }
+    } else {
+      console.error("no valid bubble at position " + row + "," + col);
+    }
   }
 
   handleBottomCollision(
     hitBubble: Bubble,
     isOffsetRow: boolean,
-    isFirstCol: boolean
+    isFirstCol: boolean,
+    isLastCol: boolean,
+    hitSide: "bottom-left" | "bottom-right"
   ): void {
     const row = hitBubble.row + 1;
     let col = hitBubble.col;
-    console.log("hitBubble", hitBubble.col);
-    console.log("bottom collision");
 
-    // if bubble is hit at the left-bottom corner
-    if (this._newBubble.x < hitBubble.x) {
+    // if bubble is hit at the bottom-left corner
+    if (hitSide === "bottom-left") {
       if (!isOffsetRow && !isFirstCol) {
         col = hitBubble.col - 1;
       }
@@ -151,6 +179,8 @@ class CollisionManager {
     } else {
       if (isOffsetRow) {
         col = hitBubble.col + 1;
+      } else if (isLastCol) {
+        col = hitBubble.col - 1;
       }
     }
 
@@ -158,48 +188,56 @@ class CollisionManager {
 
     // insert new bubble into the bubbles array if it exists
     if (this.bubbles[row]) {
-      const targetBubble = this.bubbles[row][col];
-      if (targetBubble) {
-        if (targetBubble.status === "active") {
-          this.handleBubbleCollision(targetBubble);
-          return;
-        }
-
-        this.bubbles[row][col] = this._newBubble;
-      } else {
-        console.log("no target bubble at position " + row + "," + col);
-        debugger;
+      if (!this.isValidAndAvailablePosition(row, col)) {
+        this.handleInvalidPosition(row, col);
+        return;
       }
-
-      // create new row if it doesn't exist
+      this.bubbles[row][col] = this._newBubble;
     } else {
+      // create new row if it doesn't exist
       const isNewRowOffset = !isOffsetRow;
-      const newRowLength = isNewRowOffset
-        ? this.view.maxCols - 1
-        : this.view.maxCols;
-      const newRow = Array(newRowLength)
-        .fill(new Bubble("inactive", 0, 0))
-        .map((bubble, index) => {
-          bubble.col = index;
-          bubble.row = row;
-          bubble.isOffset = isNewRowOffset;
-          return bubble;
-        });
+      const newRow = this.createNewEmptyRow(isNewRowOffset, row);
+
+      // insert new bubble into the new row and add it to the bubbles array
       newRow[col] = this._newBubble;
       this.bubbles.push(newRow);
     }
   }
 
-  handleLeftCollision(hitBubble: Bubble, isFirstCol: boolean): void {
-    console.log("left side collision");
+  createNewEmptyRow(isOffset: boolean, row: number): Bubble[] {
+    const newRowLength = isOffset ? this.view.maxCols - 1 : this.view.maxCols;
+
+    const newRow = Array(newRowLength)
+      .fill(new Bubble("inactive", 0, 0))
+      .map((bubble, index) => {
+        bubble.col = index;
+        bubble.row = row;
+        bubble.isOffset = isOffset;
+        return bubble;
+      });
+
+    return newRow;
+  }
+
+  handleLeftCollision(
+    hitBubble: Bubble,
+    isFirstCol: boolean,
+    isLastCol: boolean
+  ): void {
     if (isFirstCol) {
       this.handleBottomCollision(
         hitBubble,
-
         hitBubble.isOffset,
-        isFirstCol
+        isFirstCol,
+        isLastCol,
+        "bottom-left"
       );
     } else {
+      if (!this.isValidAndAvailablePosition(hitBubble.row, hitBubble.col - 1)) {
+        this.handleInvalidPosition(hitBubble.row, hitBubble.col - 1);
+        return;
+      }
+
       this.setBubbleParams(
         hitBubble.row,
         hitBubble.col - 1,
@@ -210,10 +248,20 @@ class CollisionManager {
   }
 
   handleRightCollision(hitBubble: Bubble, isLastCol: boolean): void {
-    console.log("right side collision");
+    // console.log("right side collision");
     if (isLastCol) {
-      this.handleBottomCollision(hitBubble, hitBubble.isOffset, false);
+      this.handleBottomCollision(
+        hitBubble,
+        hitBubble.isOffset,
+        false,
+        isLastCol,
+        "bottom-right"
+      );
     } else {
+      if (!this.isValidAndAvailablePosition(hitBubble.row, hitBubble.col + 1)) {
+        this.handleInvalidPosition(hitBubble.row, hitBubble.col + 1);
+        return;
+      }
       this.setBubbleParams(
         hitBubble.row,
         hitBubble.col + 1,

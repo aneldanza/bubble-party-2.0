@@ -27,8 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const restartButton = document.getElementById("play-again")!;
 
   restartButton.addEventListener("click", () => {
-    game.start();
     gameOverElement.style.display = "none";
+    game.reset();
+    game.start();
   });
 
   game.start();
