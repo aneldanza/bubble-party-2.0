@@ -94,26 +94,6 @@ class GameView implements Controls {
     this.bubbleMargin = bubbleRadius * 0.15;
   }
 
-  // draw grid on canvas with radius spacing
-  drawGrid(): void {
-    this.ctx.beginPath();
-    this.ctx.strokeStyle = "gray";
-    this.ctx.lineWidth = 0.5;
-    this.ctx.setLineDash([10, 0]);
-
-    for (let x = 0; x < this.canvas.width; x += this.radius) {
-      this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, this.canvas.height);
-    }
-
-    for (let y = 0; y < this.canvas.height; y += this.radius) {
-      this.ctx.moveTo(0, y);
-      this.ctx.lineTo(this.canvas.width, y);
-    }
-
-    this.ctx.stroke();
-  }
-
   draw(bubbles: Bubble[][], shooter: Shooter): void {
     this.shooter = shooter;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
