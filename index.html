@@ -14,9 +14,19 @@
     <title>Bubble Party</title>
   </head>
   <body>
-    <div id="app" class="h-screen w-screen flex flex-col px-4 md:px-8 lg:px-16">
-      <nav class="h-16 lg:h-24 flex justify-between items-center">
+    <div
+      id="app"
+      class="h-screen w-screen max-h-screen flex flex-col px-4 md:px-8 lg:px-16"
+    >
+      <nav
+        id="navbar"
+        class="h-16 lg:h-24 flex justify-between items-center py-4"
+      >
         <div class="logo">Bubble Party</div>
+        <div class="btn action-btn" id="score">
+          <span>Score:</span>
+          <span class="score-value">0</span>
+        </div>
         <nav class="flex gap-4 items-center text-sm">
           <a
             href="https://www.linkedin.com/in/anel-danza-a9591868/"
@@ -64,10 +74,32 @@
           </a>
         </nav>
       </nav>
-      <main class="flex-grow">
-        <canvas id="game-canvas" class="w-full h-full flex grow"></canvas>
+      <main id="game-container" class="flex-grow relative">
+        <div
+          id="game-over"
+          class="absolute top-0 left-0 w-full h-full hidden flex-col gap-8 items-center justify-center bg-gray-900 opacity-90 text-white"
+        >
+          <span class="game-over-message">GAME OVER</span>
+          <div class="score">
+            <span>Highest Score</span>
+            <span id="highest-score"></span>
+          </div>
+          <div class="score">
+            <span>Your Score</span>
+            <span class="score-value"></span>
+          </div>
+          <span
+            id="play-again"
+            class="font-logo text-red-500 text-xl border rounded p-6 tracking-widest cursor-pointer"
+            >Play Again</span
+          >
+        </div>
+        <canvas
+          id="game-canvas"
+          class="w-full h-full max-w-[700px] flex shadow-gray-400 rounded shadow m-auto"
+        ></canvas>
       </main>
-      <nav>
+      <nav id="game-controls" class="h-16 lg:h-24 py-4">
         <div class="flex justify-center items-center gap-4">
           <button class="btn action-btn" id="toggle-pause">Pause</button>
           <button class="btn action-btn" id="quit">Quit</button>
