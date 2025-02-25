@@ -1,11 +1,9 @@
-import { sounds } from "./constants";
-
 class SoundManager {
   private sounds: { [key: string]: HTMLAudioElement };
   public isSpecEffectMuted: boolean;
   public isMusicMuted: boolean;
 
-  constructor() {
+  constructor(sounds: { [key: string]: string }) {
     this.sounds = {};
     for (const key in sounds) {
       this.sounds[key] = new Audio(sounds[key]);

@@ -21,7 +21,8 @@ class Game {
   constructor(
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
-    colors: string[]
+    colors: string[],
+    soundManager: SoundManager
   ) {
     this.bubbles = [];
     this.moves = 0;
@@ -37,7 +38,7 @@ class Game {
       this.bubbles,
       this.shooter
     );
-    this.soundManager = new SoundManager();
+    this.soundManager = soundManager;
 
     this.handleMouseClickRef = this.handleMouseClick.bind(this);
     this.bindEvents();
