@@ -28,7 +28,7 @@ class Game {
     this.canvas = canvas;
 
     this.view = new GameView(canvas, ctx, colors);
-    this.shooter = new Shooter(this.view.getRandColor(), 10);
+    this.shooter = new Shooter(this.view.getRandColor(), 15);
 
     this.collisionManager = new CollisionManager(
       this.view,
@@ -195,39 +195,30 @@ class Game {
     this.collisionManager.newBubbleFormed.value = false;
   }
 
-  getHitBubbles(): Bubble[] {
+  findHitBubble(): Bubble | null {
     const shooterX = this.shooter.x;
     const shooterY = this.shooter.y;
 
-    const hitBubbles: Bubble[] = [];
-
-    this.bubbles.forEach((row) => {
-      row.forEach((bubble) => {
+    for (const row of this.bubbles) {
+      for (const bubble of row) {
         if (bubble.status === "inactive") {
-          return;
+          continue;
         }
 
         if (bubble.isHit(shooterX, shooterY, this.view.radius)) {
-          hitBubbles.push(bubble);
           this.shooter.stop();
-
-          return;
+          return bubble;
         }
-      });
-    });
+      }
+    }
 
-    return hitBubbles;
+    return null;
   }
 
   detectBubbleCollision(): void {
-    const hitBubbles: Bubble[] = this.getHitBubbles();
-    if (hitBubbles.length) {
-      console.log(
-        "hitBubbles",
-        hitBubbles.map((b) => b.row + "," + b.col)
-      );
+    const hitBubble = this.findHitBubble();
 
-      const hitBubble = hitBubbles[0];
+    if (hitBubble) {
       const hitSide = this.collisionManager.determineHitSide(hitBubble);
 
       console.log("hitSide", hitSide);
