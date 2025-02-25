@@ -94,7 +94,7 @@ class GameView implements Controls {
     this.bubbleMargin = bubbleRadius * 0.15;
   }
 
-  // draw grid on canvas with 10px spacing
+  // draw grid on canvas with radius spacing
   drawGrid(): void {
     this.ctx.beginPath();
     this.ctx.strokeStyle = "gray";
@@ -117,7 +117,7 @@ class GameView implements Controls {
   draw(bubbles: Bubble[][], shooter: Shooter): void {
     this.shooter = shooter;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawGrid();
+
     this.drawBubble(this.shooter);
     this.drawBubbles(bubbles);
 
@@ -131,33 +131,22 @@ class GameView implements Controls {
     this.ctx.beginPath();
     this.ctx.arc(bubble.x, bubble.y, this.radius, 0, Math.PI * 2);
     this.ctx.fillStyle = bubble.color;
-    this.ctx.fill();
-    // draw number of row inside the bubble
 
-    this.ctx.font = "12px Arial";
-    this.ctx.textAlign = "center";
-    this.ctx.textBaseline = "ideographic";
-    // make the text color black
-    this.ctx.fillStyle = "white";
-    this.ctx.fillText(`${bubble.col}`, bubble.x, bubble.y, this.radius * 2);
-
-    // draw border
     if (bubble.status === "active") {
-      this.ctx.strokeStyle = bubble.color;
-    } else {
-      this.ctx.strokeStyle = "black";
+      // make bubble more stylish add gradient
+      const gradient = this.ctx.createRadialGradient(
+        bubble.x - this.radius / 4,
+        bubble.y - this.radius / 4,
+        this.radius / 10,
+        bubble.x,
+        bubble.y,
+        this.radius
+      );
+      gradient.addColorStop(0, "white");
+      gradient.addColorStop(1, bubble.color);
+      this.ctx.fillStyle = gradient;
     }
-
-    // draw a dot for x and y positions
-    this.ctx.beginPath();
-    this.ctx.arc(bubble.x, bubble.y, 2, 0, Math.PI * 2);
-    this.ctx.fillStyle = "black";
     this.ctx.fill();
-    this.ctx.closePath();
-
-    this.ctx.lineWidth = 2;
-    this.ctx.stroke();
-    this.ctx.closePath();
   }
 
   drawAimLine(): void {
