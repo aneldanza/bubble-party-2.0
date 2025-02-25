@@ -3,7 +3,12 @@ import Shooter from "./shooter";
 import Bubble from "./bubble";
 import Observer from "./observer";
 import CollisionManager from "./collission-manager";
-import { OFFSET_RELATIVE_POSITIONS, RELATIVE_POSITIONS } from "./constants";
+import SoundManager from "./sound-manager";
+import {
+  OFFSET_RELATIVE_POSITIONS,
+  RELATIVE_POSITIONS,
+  sounds,
+} from "./constants";
 
 class Game {
   public view: GameView;
@@ -15,6 +20,7 @@ class Game {
   public score: Observer<number>;
   private handleMouseClickRef: () => void;
   private canvas: HTMLCanvasElement;
+  private soundManager: SoundManager;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -35,6 +41,7 @@ class Game {
       this.bubbles,
       this.shooter
     );
+    this.soundManager = new SoundManager();
 
     this.handleMouseClickRef = this.handleMouseClick.bind(this);
     this.bindEvents();
@@ -57,6 +64,8 @@ class Game {
 
   gameOver(): void {
     console.log("GAME OVER");
+    this.soundManager.gameOver();
+
     this.collisionManager.newBubbleFormed.unsubscribe(() => {
       if (this.collisionManager.newBubbleFormed.value) {
         this.handleNewBubble();
@@ -184,6 +193,8 @@ class Game {
 
         console.log("bubblesToDropLength", bubblesToDropLength);
         this.score.value += bubblesToDropLength;
+
+        this.soundManager.bubbleBurst(bubblesToDropLength);
       }
     } else {
       throw new Error("new bubble was not created on collision");
@@ -219,6 +230,8 @@ class Game {
     const hitBubble = this.findHitBubble();
 
     if (hitBubble) {
+      this.soundManager.play("hit");
+
       const hitSide = this.collisionManager.determineHitSide(hitBubble);
 
       console.log("hitSide", hitSide);

@@ -24,3 +24,11 @@ export const RELATIVE_POSITIONS = [
   { ROW: 1, COL: -1 },
   { ROW: 1, COL: 0 },
 ];
+
+export const sounds: { [key: string]: string } = {
+  hit: "/sounds/hit.mp3",
+  pop: "/sounds/bubble_burst.mp3",
+  wow: "/sounds/wow.mp3",
+  uhOh: "/sounds/uh-oh.mp3",
+  lose: "/sounds/game_over.mp3",
+};
