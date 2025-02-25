@@ -4,11 +4,7 @@ import Bubble from "./bubble";
 import Observer from "./observer";
 import CollisionManager from "./collission-manager";
 import SoundManager from "./sound-manager";
-import {
-  OFFSET_RELATIVE_POSITIONS,
-  RELATIVE_POSITIONS,
-  sounds,
-} from "./constants";
+import { OFFSET_RELATIVE_POSITIONS, RELATIVE_POSITIONS } from "./constants";
 
 class Game {
   public view: GameView;
@@ -60,6 +56,7 @@ class Game {
     this.animate();
     this.addRow();
     this.canvas.addEventListener("click", this.handleMouseClickRef);
+    this.soundManager.playTheme();
   }
 
   gameOver(): void {

@@ -31,4 +31,5 @@ export const sounds: { [key: string]: string } = {
   wow: "/sounds/wow.mp3",
   uhOh: "/sounds/uh-oh.mp3",
   lose: "/sounds/game_over.mp3",
+  theme: "/sounds/Honolulu-March.mp3",
 };
