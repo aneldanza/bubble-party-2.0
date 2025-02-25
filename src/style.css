@@ -20,4 +20,8 @@
   .action-btn {
     @apply font-logo text-blue-700 text-lg;
   }
+
+  .game-over-message {
+    @apply font-logo text-6xl text-red-700;
+  }
 }
