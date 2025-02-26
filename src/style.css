@@ -24,4 +24,8 @@
   .game-over-message {
     @apply font-logo text-6xl text-red-700;
   }
+
+  .settings-btn {
+    @apply font-logo  text-xl border rounded p-6 tracking-widest cursor-pointer;
+  }
 }

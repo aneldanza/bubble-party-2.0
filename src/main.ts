@@ -2,6 +2,8 @@ import { COLORS, SOUNDS } from "./constants";
 import "./style.css";
 import Game from "./game";
 import SoundManager from "./sound-manager";
+import { setupGameOverScreen } from "./game-over";
+import { setupStartScreen } from "./setup";
 
 // check if page is loaded
 document.addEventListener("DOMContentLoaded", () => {
@@ -10,33 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const soundManager = new SoundManager(SOUNDS);
   const game = new Game(canvas, ctx, COLORS, soundManager);
 
-  const gameOverContainer = document.createElement("div");
-  gameOverContainer.id = "game-over-container";
-  document.body.appendChild(gameOverContainer);
+  setupGameOverScreen(game);
 
-  fetch("game-over.html")
-    .then((response) => response.text())
-    .then((html) => {
-      gameOverContainer.innerHTML = html;
-
-      const restartButton = document.getElementById("play-again")!;
-      const gameOverElement = document.getElementById("game-over")!;
-
-      restartButton.addEventListener("click", () => {
-        gameOverElement.style.display = "none";
-        game.reset();
-        game.start();
-      });
-
-      game.view.isOver.subscribe((value) => {
-        if (value) {
-          gameOverElement.style.display = "flex";
-        }
-      });
-    })
-    .catch((error) => {
-      console.error("Error loading game-over.html:", error);
-    });
+  setupStartScreen(game);
 
   const scoreElements = document.getElementsByClassName("score-value");
   const toggleMuteButton = document.getElementById("toggle-mute")!;
@@ -51,6 +29,4 @@ document.addEventListener("DOMContentLoaded", () => {
     soundManager.muteMusic();
     soundManager.muteSpecEffect();
   });
-
-  game.start();
 });
