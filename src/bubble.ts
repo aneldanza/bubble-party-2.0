@@ -1,6 +1,5 @@
 import Shooter from "./shooter";
-
-type BubbleStatus = "active" | "inactive";
+import { BubbleStatus } from "./types";
 
 class Bubble {
   public x!: number;

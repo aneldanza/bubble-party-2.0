@@ -2,6 +2,7 @@ import Bubble from "./bubble";
 import GameView from "./game-view";
 import Shooter from "./shooter";
 import Observer from "./observer";
+import { hitSideType } from "./types";
 
 class CollisionManager {
   private view: GameView;
@@ -83,9 +84,7 @@ class CollisionManager {
     this.newBubbleFormed.value = true;
   }
 
-  determineHitSide(
-    hitBubble: Bubble
-  ): "bottom-left" | "bottom-right" | "right" | "left" {
+  determineHitSide(hitBubble: Bubble): hitSideType {
     return (
       this.isBottomCollision(this.shooter.x, this.shooter.y, hitBubble) ||
       this.isSideCollision(this.shooter.x, hitBubble)
@@ -107,10 +106,7 @@ class CollisionManager {
     return shooterX > hitBubble.x ? "right" : "left";
   }
 
-  handleBubbleCollision(
-    hitBubble: Bubble,
-    hitSide: "bottom-left" | "bottom-right" | "left" | "right"
-  ): void {
+  handleBubbleCollision(hitBubble: Bubble, hitSide: hitSideType): void {
     const isOffsetRow = hitBubble.isOffset;
     const isFirstCol = hitBubble.col === 0;
 

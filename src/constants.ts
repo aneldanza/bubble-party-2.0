@@ -1,3 +1,5 @@
+import { SoundsObject } from "./types";
+
 export const COLORS: string[] = [
   "#FF69B4", // pink
   "#4169E1", // royal blue
@@ -25,7 +27,7 @@ export const RELATIVE_POSITIONS = [
   { ROW: 1, COL: 0 },
 ];
 
-export const SOUNDS: { [key: string]: { [key: string]: string } } = {
+export const SOUNDS: SoundsObject = {
   specEffects: {
     hit: "/sounds/hit.mp3",
     pop: "/sounds/bubble_burst.mp3",

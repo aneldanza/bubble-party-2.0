@@ -1,4 +1,4 @@
-type SoundsObject = { [key: string]: { [key: string]: string } };
+import { SoundsObject } from "./types";
 
 class SoundManager {
   public sounds: { [key: string]: { [key: string]: HTMLAudioElement } };
