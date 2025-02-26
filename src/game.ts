@@ -14,9 +14,10 @@ class Game {
   private bubbles: Bubble[][];
   public moves: number;
   public score: Observer<number>;
-  private handleMouseClickRef: () => void;
   private canvas: HTMLCanvasElement;
   private soundManager: SoundManager;
+  public isPaused: Observer<boolean>;
+  private handleMouseClickRef: (e: MouseEvent) => void = () => {};
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -24,24 +25,24 @@ class Game {
     colors: string[],
     soundManager: SoundManager
   ) {
+    this.soundManager = soundManager;
+    this.canvas = canvas;
     this.bubbles = [];
     this.moves = 0;
-    this.score = new Observer<number>(0);
 
-    this.canvas = canvas;
+    this.score = new Observer<number>(0);
+    this.isPaused = new Observer<boolean>(false);
 
     this.view = new GameView(canvas, ctx, colors);
     this.shooter = new Shooter(this.view.getRandColor(), 15);
-
     this.collisionManager = new CollisionManager(
       this.view,
       this.bubbles,
       this.shooter
     );
-    this.soundManager = soundManager;
 
     this.handleMouseClickRef = this.handleMouseClick.bind(this);
-    this.bindEvents();
+    this.subscribeObserverEvents();
   }
 
   reset(): void {
@@ -50,13 +51,14 @@ class Game {
     this.score.value = 0;
     this.moves = 0;
     this.view.isOver.value = false;
+    this.isPaused.value = false;
   }
 
   start(): void {
     this.view.init(this.shooter);
     this.animate();
     this.addRow();
-    this.canvas.addEventListener("click", this.handleMouseClickRef);
+    this.subscribeUserEvents();
     this.soundManager.playTheme();
   }
 
@@ -64,15 +66,18 @@ class Game {
     console.log("GAME OVER");
     this.soundManager.gameOver();
 
-    this.collisionManager.newBubbleFormed.unsubscribe(() => {
-      if (this.collisionManager.newBubbleFormed.value) {
-        this.handleNewBubble();
-      }
-    });
-
-    this.canvas.removeEventListener("click", this.handleMouseClickRef);
+    this.unSubscribeUserEvents();
 
     this.shooter.stop();
+  }
+
+  handlePause(): void {
+    if (this.isPaused.value) {
+      this.unSubscribeUserEvents();
+    } else {
+      this.subscribeUserEvents();
+    }
+    this.soundManager.pauseGameSounds(this.isPaused.value);
   }
 
   animate(): void {
@@ -120,47 +125,6 @@ class Game {
       row.push(bubble);
     }
     this.bubbles.unshift(row);
-  }
-
-  bindEvents(): void {
-    this.collisionManager.newBubbleFormed.subscribe(() => {
-      if (this.collisionManager.newBubbleFormed.value) {
-        this.handleNewBubble();
-      }
-    });
-
-    this.view.isOver.subscribe(() => {
-      if (this.view.isOver.value) {
-        this.gameOver();
-      }
-    });
-  }
-
-  handleMouseClick(): void {
-    console.clear();
-    console.log("CLICKED!");
-    // calculate the direction of the shooter
-    const dx = this.view.mousePosX - this.shooter.x;
-    const dy = this.view.mousePosY - this.shooter.y;
-    const length = Math.sqrt(dx * dx + dy * dy);
-
-    this.shooter.setDirection(
-      // dx,
-      // dy
-      // dx / (this.view.radius * 2),
-      // dy / (this.view.radius * 2)
-      (dx / length) * this.shooter.speed,
-      (dy / length) * this.shooter.speed
-    );
-
-    // increase move count
-    this.shooter.moves++;
-
-    // add a new row of bubbles after 5 moves
-    if (this.shooter.moves > 3) {
-      this.shooter.moves = 0;
-      this.addRow();
-    }
   }
 
   handleNewBubble(): void {
@@ -228,7 +192,7 @@ class Game {
     const hitBubble = this.findHitBubble();
 
     if (hitBubble) {
-      this.soundManager.play("hit");
+      this.soundManager.play("specEffects", "hit");
 
       const hitSide = this.collisionManager.determineHitSide(hitBubble);
 
@@ -345,6 +309,59 @@ class Game {
       this.view.canvas.height - this.view.radius,
       this.view.getRandColor()
     );
+  }
+
+  subscribeObserverEvents(): void {
+    this.collisionManager.newBubbleFormed.subscribe(() => {
+      if (this.collisionManager.newBubbleFormed.value) {
+        this.handleNewBubble();
+      }
+    });
+
+    this.view.isOver.subscribe(() => {
+      if (this.view.isOver.value) {
+        this.gameOver();
+      }
+    });
+
+    this.isPaused.subscribe(() => {
+      this.handlePause();
+    });
+  }
+
+  subscribeUserEvents(): void {
+    this.canvas.addEventListener("mousemove", this.view.handleMouseMoveRef);
+    this.canvas.addEventListener("touchmove", this.view.handleTouchMoveRef);
+    this.canvas.addEventListener("click", this.handleMouseClickRef);
+  }
+
+  unSubscribeUserEvents(): void {
+    this.canvas.removeEventListener("mousemove", this.view.handleMouseMoveRef);
+    this.canvas.removeEventListener("touchmove", this.view.handleTouchMoveRef);
+    this.canvas.removeEventListener("click", this.handleMouseClickRef);
+  }
+
+  handleMouseClick(): void {
+    console.clear();
+    console.log("CLICKED!");
+    // calculate the direction of the shooter
+    const dx = this.view.mousePosX - this.shooter.x;
+    const dy = this.view.mousePosY - this.shooter.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    this.shooter.setDirection(
+      (dx / length) * this.shooter.speed,
+      (dy / length) * this.shooter.speed
+    );
+
+    // increase move count
+    this.shooter.moves++;
+
+    // add a new row of bubbles after 5 moves
+    if (this.shooter.moves > 3) {
+      this.shooter.moves = 0;
+      this.addRow();
+    }
   }
 }
 

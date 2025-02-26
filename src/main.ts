@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const scoreElements = document.getElementsByClassName("score-value");
   const toggleMuteButton = document.getElementById("toggle-mute")!;
+  const quitButton = document.getElementById("quit")!;
+  const pauseButton = document.getElementById("toggle-pause")!;
 
   game.score.subscribe((value) => {
     for (let i = 0; i < scoreElements.length; i++) {
@@ -25,11 +27,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  game.isPaused.subscribe((value) => {
+    value
+      ? (pauseButton.textContent = "Resume")
+      : (pauseButton.textContent = "Pause");
+  });
+
   toggleMuteButton.addEventListener("click", (e: MouseEvent) => {
-    soundManager.muteMusic();
-    soundManager.muteSpecEffect();
+    soundManager.toggleMuteAll();
 
     const button = e.target as HTMLButtonElement;
-    button.textContent = soundManager.sounds.theme.muted ? "Unmute" : "Mute";
+    button.textContent = soundManager.isMuted ? "Unmute" : "Mute";
+  });
+
+  quitButton.addEventListener("click", () => {
+    game.view.isOver.value = true;
+  });
+
+  pauseButton.addEventListener("click", () => {
+    game.isPaused.value = !game.isPaused.value;
   });
 });

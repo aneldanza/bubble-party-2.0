@@ -1,47 +1,78 @@
-class SoundManager {
-  public sounds: { [key: string]: HTMLAudioElement };
+type SoundsObject = { [key: string]: { [key: string]: string } };
 
-  constructor(sounds: { [key: string]: string }) {
+class SoundManager {
+  public sounds: { [key: string]: { [key: string]: HTMLAudioElement } };
+  public isMuted: boolean = false;
+
+  constructor(sounds: SoundsObject) {
     this.sounds = {};
-    for (const key in sounds) {
-      this.sounds[key] = new Audio(sounds[key]);
+    for (const section in sounds) {
+      this.sounds[section] = {};
+      for (const sound in sounds[section]) {
+        this.sounds[section][sound] = new Audio(sounds[section][sound]);
+      }
     }
   }
 
-  play(sound: string): void {
-    this.sounds[sound].play();
+  play(section: string, sound: string): void {
+    if (this.isMuted) return;
+    this.sounds[section][sound].play();
   }
 
   gameOver(): void {
-    this.sounds.theme.pause();
-    this.play("uhOh");
-    this.sounds.uhOh.onended = () => this.play("lose");
+    if (this.isMuted) return;
+    this.sounds.theme.main.pause();
+    const gameOverSection = this.sounds.gameOver;
+    gameOverSection.uhOh.play();
+    gameOverSection.uhOh.onended = () => gameOverSection.lose.play();
   }
 
   bubbleBurst(numOfBubbles: number): void {
-    this.play("pop");
+    if (this.isMuted) return;
+    const specEffectsSection = this.sounds.specEffects;
+    specEffectsSection.pop.play();
 
     if (numOfBubbles > 4) {
-      this.play("wow");
+      specEffectsSection.wow.play();
     }
   }
 
   playTheme(): void {
-    this.sounds.theme.loop = true;
-    this.sounds.theme.volume = 0.3;
-    this.sounds.theme.play();
+    if (this.isMuted) return;
+    this.sounds.theme.main.loop = true;
+    this.sounds.theme.main.volume = 0.3;
+    this.sounds.theme.main.play();
   }
 
-  muteMusic() {
-    this.sounds.theme.muted = !this.sounds.theme.muted;
+  toggleMuteMusic() {
+    this.sounds.theme.main.muted = !this.sounds.theme.main.muted;
   }
 
-  muteSpecEffect() {
-    this.sounds.uhOh.muted = !this.sounds.uhOh.muted;
-    this.sounds.pop.muted = !this.sounds.pop.muted;
-    this.sounds.wow.muted = !this.sounds.wow.muted;
-    this.sounds.lose.muted = !this.sounds.lose.muted;
-    this.sounds.hit.muted = !this.sounds.hit.muted;
+  toggleMuteSpecEffect() {
+    for (const key in this.sounds.specEffects) {
+      this.sounds.specEffects[key].muted = !this.sounds.specEffects[key].muted;
+    }
+  }
+
+  toggleMuteGameOver() {
+    for (const key in this.sounds.gameOver) {
+      this.sounds.gameOver[key].muted = !this.sounds.gameOver[key].muted;
+    }
+  }
+
+  toggleMuteAll() {
+    this.isMuted = !this.isMuted;
+    this.toggleMuteMusic();
+    this.toggleMuteSpecEffect();
+    this.toggleMuteGameOver();
+  }
+
+  pauseGameSounds(pause: boolean) {
+    if (pause) {
+      this.sounds.theme.main.pause();
+    } else {
+      this.sounds.theme.main.play();
+    }
   }
 }
 

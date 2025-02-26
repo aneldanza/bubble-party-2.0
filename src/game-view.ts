@@ -19,6 +19,8 @@ class GameView implements Controls {
   public maxCols: number;
   public bubbleMargin: number;
   public isOver: Observer<boolean>;
+  public handleMouseMoveRef: (e: MouseEvent) => void;
+  public handleTouchMoveRef: (e: TouchEvent) => void;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -37,7 +39,10 @@ class GameView implements Controls {
 
     this.setBubbleRadius();
 
-    this.bindEvents();
+    this.handleMouseMoveRef = this.handleMouseMove.bind(this);
+    this.handleTouchMoveRef = this.handleTouchMove.bind(this);
+
+    this.subscribeWindowEvents();
   }
 
   init(shooter: Shooter): void {
@@ -67,10 +72,8 @@ class GameView implements Controls {
     this.calculateMaxRowsAndCols();
   }
 
-  bindEvents(): void {
+  subscribeWindowEvents(): void {
     window.addEventListener("resize", this.resizeCanvas.bind(this));
-    document.addEventListener("mousemove", (e) => this.handleMouseMove(e));
-    document.addEventListener("touchmove", (e) => this.handleTouchMove(e));
   }
 
   setBubbleRadius(): void {

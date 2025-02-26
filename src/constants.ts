@@ -25,11 +25,17 @@ export const RELATIVE_POSITIONS = [
   { ROW: 1, COL: 0 },
 ];
 
-export const SOUNDS: { [key: string]: string } = {
-  hit: "/sounds/hit.mp3",
-  pop: "/sounds/bubble_burst.mp3",
-  wow: "/sounds/wow.mp3",
-  uhOh: "/sounds/uh-oh.mp3",
-  lose: "/sounds/game_over.mp3",
-  theme: "/sounds/Honolulu-March.mp3",
+export const SOUNDS: { [key: string]: { [key: string]: string } } = {
+  specEffects: {
+    hit: "/sounds/hit.mp3",
+    pop: "/sounds/bubble_burst.mp3",
+    wow: "/sounds/wow.mp3",
+  },
+  gameOver: {
+    uhOh: "/sounds/uh-oh.mp3",
+    lose: "/sounds/game_over.mp3",
+  },
+  theme: {
+    main: "/sounds/Honolulu-March.mp3",
+  },
 };
