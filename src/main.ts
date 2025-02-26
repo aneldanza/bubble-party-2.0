@@ -25,8 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  toggleMuteButton.addEventListener("click", () => {
+  toggleMuteButton.addEventListener("click", (e: MouseEvent) => {
     soundManager.muteMusic();
     soundManager.muteSpecEffect();
+
+    const button = e.target as HTMLButtonElement;
+    button.textContent = soundManager.sounds.theme.muted ? "Unmute" : "Mute";
   });
 });
