@@ -5,6 +5,7 @@ import Observer from "./observer";
 import CollisionManager from "./collission-manager";
 import SoundManager from "./sound-manager";
 import { OFFSET_RELATIVE_POSITIONS, RELATIVE_POSITIONS } from "./constants";
+import { PlayMode } from "./types";
 
 class Game {
   public view: GameView;
@@ -14,6 +15,7 @@ class Game {
   private bubbles: Bubble[][];
   public moves: number;
   public score: Observer<number>;
+  public playMode: Observer<PlayMode>;
   private canvas: HTMLCanvasElement;
   private soundManager: SoundManager;
   public isPaused: Observer<boolean>;
@@ -32,6 +34,7 @@ class Game {
 
     this.score = new Observer<number>(0);
     this.isPaused = new Observer<boolean>(false);
+    this.playMode = new Observer<PlayMode>("relaxed");
 
     this.view = new GameView(canvas, ctx, colors);
     this.shooter = new Shooter(this.view.getRandColor(), 15);
@@ -80,6 +83,10 @@ class Game {
     this.soundManager.pauseGameSounds(this.isPaused.value);
   }
 
+  setPlayMode(mode: PlayMode): void {
+    this.playMode.value = mode;
+  }
+
   animate(): void {
     if (!this.view.isOver.value) {
       this.shooter.move();
@@ -91,6 +98,10 @@ class Game {
       }
 
       requestAnimationFrame(this.animate.bind(this));
+    }
+
+    if (this.playMode.value == "time-limit") {
+      this.fillBubbles();
     }
   }
 
@@ -357,10 +368,12 @@ class Game {
     // increase move count
     this.shooter.moves++;
 
-    // add a new row of bubbles after 5 moves
-    if (this.shooter.moves > 3) {
-      this.shooter.moves = 0;
-      this.addRow();
+    if (this.playMode.value === "relaxed") {
+      // add a new row of bubbles after 5 moves
+      if (this.shooter.moves > 3) {
+        this.shooter.moves = 0;
+        this.addRow();
+      }
     }
   }
 }

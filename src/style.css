@@ -28,4 +28,16 @@
   .settings-btn {
     @apply font-logo  text-xl border rounded p-6 tracking-widest cursor-pointer;
   }
+
+  .play-mode {
+    @apply font-logo text-2xl text-white hover:underline hover:underline-offset-8 cursor-pointer justify-self-end;
+  }
+
+  .mode-svg {
+    @apply hidden absolute -left-16;
+  }
+
+  .mode-svg.selected {
+    @apply block;
+  }
 }
