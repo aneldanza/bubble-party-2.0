@@ -1,7 +1,7 @@
 import Game from "./game";
 
 export function setupStartScreen(game: Game): void {
-  fetch("setup-screen.html")
+  fetch("./views/setup-screen.html")
     .then((response) => response.text())
     .then((html) => {
       const setupScreenContainer = document.createElement("div");

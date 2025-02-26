@@ -5,7 +5,7 @@ export function setupGameOverScreen(game: Game): void {
   gameOverContainer.id = "game-over-container";
   document.body.appendChild(gameOverContainer);
 
-  fetch("game-over.html")
+  fetch("./views/game-over.html")
     .then((response) => response.text())
     .then((html) => {
       gameOverContainer.innerHTML = html;
