@@ -66,6 +66,7 @@ class Game {
     if (this.playMode.value == "time-limit") {
       this.fillBubbles();
     }
+    console.log("game mode is", this.playMode.value);
   }
 
   gameOver(): void {
@@ -149,21 +150,21 @@ class Game {
 
         const floatingBubbles = this.findFloatingBubbles();
 
-        console.log(
-          "cluster",
-          cluster.map((b) => b.row + "," + b.col)
-        );
+        // console.log(
+        //   "cluster",
+        //   cluster.map((b) => b.row + "," + b.col)
+        // );
 
-        console.log(
-          "floatingBubbles",
-          floatingBubbles.map((b) => b.row + "," + b.col)
-        );
+        // console.log(
+        //   "floatingBubbles",
+        //   floatingBubbles.map((b) => b.row + "," + b.col)
+        // );
 
         const bubblesToDropLength = clusterLength + floatingBubbles.length;
 
         this.dropBubbles(floatingBubbles);
 
-        console.log("bubblesToDropLength", bubblesToDropLength);
+        // console.log("bubblesToDropLength", bubblesToDropLength);
         this.score.value += bubblesToDropLength;
 
         this.soundManager.bubbleBurst(bubblesToDropLength);
@@ -206,8 +207,8 @@ class Game {
 
       const hitSide = this.collisionManager.determineHitSide(hitBubble);
 
-      console.log("hitSide", hitSide);
-      console.log("hitBubble", hitBubble.row, hitBubble.col);
+      // console.log("hitSide", hitSide);
+      // console.log("hitBubble", hitBubble.row, hitBubble.col);
 
       this.collisionManager.handleBubbleCollision(hitBubble, hitSide);
 
@@ -352,8 +353,8 @@ class Game {
   }
 
   handleMouseClick(): void {
-    console.clear();
-    console.log("CLICKED!");
+    // console.clear();
+    // console.log("CLICKED!");
     // calculate the direction of the shooter
     const dx = this.view.mousePosX - this.shooter.x;
     const dy = this.view.mousePosY - this.shooter.y;

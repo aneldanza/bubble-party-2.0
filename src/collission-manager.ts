@@ -50,7 +50,7 @@ class CollisionManager {
   }
 
   handleTopBorderCollision(): void {
-    console.log("top border collision");
+    // console.log("top border collision");
     // create a new bubble
     this._newBubble = new Bubble("active", 0, 0, this.shooter.color);
     this._newBubble.setPos(this.shooter.x, this.shooter.y);
