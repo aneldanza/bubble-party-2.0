@@ -63,6 +63,9 @@ class Game {
     this.addRow();
     this.subscribeUserEvents();
     this.soundManager.playTheme();
+    if (this.playMode.value == "time-limit") {
+      this.fillBubbles();
+    }
   }
 
   gameOver(): void {
@@ -99,10 +102,6 @@ class Game {
 
       requestAnimationFrame(this.animate.bind(this));
     }
-
-    if (this.playMode.value == "time-limit") {
-      this.fillBubbles();
-    }
   }
 
   fillBubbles(): void {
@@ -113,7 +112,7 @@ class Game {
       }
 
       this.addRow();
-    }, 2000);
+    }, 10000);
   }
 
   addRow(): void {
