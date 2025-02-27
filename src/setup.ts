@@ -15,7 +15,7 @@ export function setupStartScreen(game: Game): void {
       const selectedSVGs = document.getElementsByClassName("mode-svg");
 
       startButton.addEventListener("click", () => {
-        setupScreenContainer.style.display = "none";
+        setupScreenContainer.style.visibility = "hidden";
         game.start();
       });
 

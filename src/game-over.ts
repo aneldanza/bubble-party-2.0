@@ -1,5 +1,6 @@
 import Game from "./game";
 import HighestScoreManager from "./highest-score-manager";
+import { setupStartScreen } from "./setup";
 
 export function setupGameOverScreen(
   game: Game,
@@ -14,9 +15,13 @@ export function setupGameOverScreen(
     .then((html) => {
       gameOverContainer.innerHTML = html;
 
-      const restartButton = document.getElementById("play-again")!;
       const gameOverElement = document.getElementById("game-over")!;
+      const restartButton = document.getElementById("play-again")!;
+      const goToStartButton = document.getElementById("go-to-start")!;
       const highestScoreElement = document.getElementById("highest-score")!;
+      const startScreenContainer = document.getElementById(
+        "setup-screen-container"
+      );
 
       restartButton.addEventListener("click", () => {
         gameOverElement.style.display = "none";
@@ -33,6 +38,17 @@ export function setupGameOverScreen(
           }
           gameOverElement.style.display = "flex";
           highestScoreElement.textContent = highScore.toString();
+        } else {
+          gameOverElement.style.display = "none";
+        }
+      });
+
+      goToStartButton.addEventListener("click", () => {
+        game.reset();
+        if (startScreenContainer) {
+          startScreenContainer.style.visibility = "visible";
+        } else {
+          setupStartScreen(game);
         }
       });
     })
