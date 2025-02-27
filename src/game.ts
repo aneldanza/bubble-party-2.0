@@ -62,7 +62,7 @@ class Game {
     this.animate();
     this.addRow();
     this.subscribeUserEvents();
-    this.soundManager.playTheme();
+    // this.soundManager.playTheme();
     if (this.playMode.value == "time-limit") {
       this.fillBubbles();
     }
