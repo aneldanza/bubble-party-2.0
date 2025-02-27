@@ -2,6 +2,7 @@ import { COLORS, SOUNDS } from "./constants";
 import "./style.css";
 import Game from "./game";
 import SoundManager from "./sound-manager";
+import HighestScoreManager from "./highest-score-manager";
 import { setupGameOverScreen } from "./game-over";
 import { setupStartScreen } from "./setup";
 
@@ -10,9 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("game-canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
   const soundManager = new SoundManager(SOUNDS);
+  const highestScoreManager = new HighestScoreManager();
   const game = new Game(canvas, ctx, COLORS, soundManager);
 
-  setupGameOverScreen(game);
+  setupGameOverScreen(game, highestScoreManager);
 
   setupStartScreen(game);
 
