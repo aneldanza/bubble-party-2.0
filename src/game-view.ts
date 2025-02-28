@@ -110,16 +110,41 @@ class GameView implements Controls {
     this.drawBubbles(bubbles);
   }
 
+  hexToRgb(hex: string, alpha: number): string {
+    let r = 0,
+      g = 0,
+      b = 0;
+
+    // 3 digits
+    if (hex.length === 4) {
+      r = parseInt(hex[1] + hex[1], 16);
+      g = parseInt(hex[2] + hex[2], 16);
+      b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+      // 6 digits
+      r = parseInt(hex[1] + hex[2], 16);
+      g = parseInt(hex[3] + hex[4], 16);
+      b = parseInt(hex[5] + hex[6], 16);
+    }
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
   addGradient(bubble: Bubble, bubbleRadius: number): void {
     const gradient = this.ctx.createRadialGradient(
       bubble.x - bubbleRadius / 4,
       bubble.y - bubbleRadius / 4,
-      bubbleRadius / 10,
+      bubbleRadius / 80,
       bubble.x,
       bubble.y,
       bubbleRadius
     );
-    gradient.addColorStop(0, "white");
+
+    if (bubble.color === "#FFD700") {
+      gradient.addColorStop(0, "rgba(255, 255, 204, 1)");
+    } else {
+      gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+    }
     gradient.addColorStop(1, bubble.color);
     this.ctx.fillStyle = gradient;
   }
@@ -131,9 +156,56 @@ class GameView implements Controls {
 
     if (bubble.status === "active") {
       this.addGradient(bubble, this.radius);
+
+      // Apply shadow
+      this.ctx.shadowBlur = 10;
+      this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      this.ctx.shadowOffsetX = 3;
+      this.ctx.shadowOffsetY = 3;
     }
     this.ctx.fill();
   }
+
+  // drawBubble(bubble: Bubble): void {
+  //   const x = bubble.x;
+  //   const y = bubble.y;
+  //   const radius = this.radius;
+  //   // Random Color Selection
+  //   const colors = [
+  //     "#F9E400",
+  //     "#F4A7B9",
+  //     "#6C9D3D",
+  //     "#7C4DFF",
+  //     "#00B8D4",
+  //     "#FF9A3D",
+  //   ];
+  //   // const color = colors[Math.floor(Math.random() * colors.length)];
+
+  //   // Create Gradient
+  //   const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
+  //   gradient.addColorStop(0, "rgba(255, 255, 255, 0.7)");
+  //   gradient.addColorStop(1, bubble.color);
+
+  //   // Apply shadow
+  //   this.ctx.shadowBlur = 10;
+  //   this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+  //   this.ctx.shadowOffsetX = 3;
+  //   this.ctx.shadowOffsetY = 3;
+
+  //   // Draw Bubble
+  //   this.ctx.beginPath();
+  //   this.ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+  //   this.ctx.fillStyle = gradient;
+  //   this.ctx.fill();
+
+  //   // Draw the outline
+  //   this.ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+  //   this.ctx.lineWidth = 0.5;
+  //   this.ctx.stroke();
+
+  //   // Reset shadow
+  //   this.ctx.shadowBlur = 0;
+  // }
 
   drawAimLine(): void {
     const dx = this.mousePosX - this.shooter.x;
