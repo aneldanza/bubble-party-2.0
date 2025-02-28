@@ -17,6 +17,7 @@ class GameView implements Controls {
   public mousePosY: number;
   public maxRows: number;
   public maxCols: number;
+  public maxColsWithOffset: number;
   public bubbleMargin: number;
   public isOver: Observer<boolean>;
   public handleMouseMoveRef: (e: MouseEvent) => void;
@@ -33,6 +34,7 @@ class GameView implements Controls {
     this.canvas = canvas;
     this.ctx = ctx;
     this.maxCols = 0;
+    this.maxColsWithOffset = 0;
     this.maxRows = 0;
     this.bubbleMargin = 3;
     this.isOver = new Observer<boolean>(false);
@@ -64,7 +66,8 @@ class GameView implements Controls {
       this.canvas.height / (bubbleDiameter + this.bubbleMargin)
     );
 
-    console.log("max rows " + this.maxRows);
+    // Calculatee maxCols for offset rows
+    this.maxColsWithOffset = this.maxCols - 1;
   }
 
   resizeCanvas(): void {
@@ -92,11 +95,32 @@ class GameView implements Controls {
       window.innerHeight - (navbarRect.height + gameControlsRect.height)
     );
 
-    // calculate bubble radius based on canvas height
-    const bubbleRadius = this.canvas.height * 0.03;
+    // Define min and max radius based on canvas dimensions
+    const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.025; // 2.5% of the smaller dimension
 
-    this.radius = bubbleRadius;
-    this.bubbleMargin = bubbleRadius * 0.15;
+    let r = minRadius;
+    let bestRadius = r;
+    let bestBubbleMargin = r * 0.1;
+    let bestTotalBubbleWidth = 0;
+    const numCols = Math.floor(this.canvas.width / (2 * r + bestBubbleMargin));
+
+    while (true) {
+      const bubbleMargin = r * 0.1;
+      const totalBubbleWidth = numCols * (2 * r + bubbleMargin);
+
+      if (totalBubbleWidth > this.canvas.width) {
+        break;
+      }
+
+      bestRadius = r;
+      bestBubbleMargin = bubbleMargin;
+      bestTotalBubbleWidth = totalBubbleWidth;
+
+      r += 0.1;
+    }
+
+    this.radius = bestRadius;
+    this.bubbleMargin = bestBubbleMargin;
   }
 
   draw(bubbles: Bubble[][], shooter: Shooter): void {
@@ -168,47 +192,6 @@ class GameView implements Controls {
     this.ctx.fill();
   }
 
-  // drawBubble(bubble: Bubble): void {
-  //   const x = bubble.x;
-  //   const y = bubble.y;
-  //   const radius = this.radius;
-  //   // Random Color Selection
-  //   const colors = [
-  //     "#F9E400",
-  //     "#F4A7B9",
-  //     "#6C9D3D",
-  //     "#7C4DFF",
-  //     "#00B8D4",
-  //     "#FF9A3D",
-  //   ];
-  //   // const color = colors[Math.floor(Math.random() * colors.length)];
-
-  //   // Create Gradient
-  //   const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
-  //   gradient.addColorStop(0, "rgba(255, 255, 255, 0.7)");
-  //   gradient.addColorStop(1, bubble.color);
-
-  //   // Apply shadow
-  //   this.ctx.shadowBlur = 10;
-  //   this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-  //   this.ctx.shadowOffsetX = 3;
-  //   this.ctx.shadowOffsetY = 3;
-
-  //   // Draw Bubble
-  //   this.ctx.beginPath();
-  //   this.ctx.arc(x, y, radius, 0, Math.PI * 2, false);
-  //   this.ctx.fillStyle = gradient;
-  //   this.ctx.fill();
-
-  //   // Draw the outline
-  //   this.ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
-  //   this.ctx.lineWidth = 0.5;
-  //   this.ctx.stroke();
-
-  //   // Reset shadow
-  //   this.ctx.shadowBlur = 0;
-  // }
-
   drawAimLine(): void {
     const dx = this.mousePosX - this.shooter.x;
     const dy = this.mousePosY - this.shooter.y;
@@ -256,9 +239,8 @@ class GameView implements Controls {
         // check if bubble is touching the bottom border
         if (
           bubble.status === "active" &&
-          bubble.y + this.radius >= this.canvas.height
+          bubble.y + this.radius >= this.canvas.height - this.radius * 2
         ) {
-          console.log("TRIGGER GAME OVER FROM VIEW");
           this.isOver.value = true;
           return;
         }

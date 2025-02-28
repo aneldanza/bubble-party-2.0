@@ -66,7 +66,6 @@ class Game {
     if (this.playMode.value == "time-limit") {
       this.fillBubbles();
     }
-    console.log("game mode is", this.playMode.value);
   }
 
   gameOver(): void {
@@ -118,9 +117,12 @@ class Game {
 
   addRow(): void {
     const row = [];
-    const isOffset = this.bubbles.length === 0 || !this.bubbles[0][0]!.isOffset;
 
-    const colNumber = isOffset ? this.view.maxCols - 1 : this.view.maxCols;
+    const isOffset = this.bubbles.length > 0 && !this.bubbles[0][0]!.isOffset;
+
+    const colNumber = isOffset
+      ? this.view.maxColsWithOffset
+      : this.view.maxCols;
 
     for (let col = 0; col < colNumber; col++) {
       const color = this.view.getRandColor();
@@ -150,21 +152,10 @@ class Game {
 
         const floatingBubbles = this.findFloatingBubbles();
 
-        // console.log(
-        //   "cluster",
-        //   cluster.map((b) => b.row + "," + b.col)
-        // );
-
-        // console.log(
-        //   "floatingBubbles",
-        //   floatingBubbles.map((b) => b.row + "," + b.col)
-        // );
-
         const bubblesToDropLength = clusterLength + floatingBubbles.length;
 
         this.dropBubbles(floatingBubbles);
 
-        // console.log("bubblesToDropLength", bubblesToDropLength);
         this.score.value += bubblesToDropLength;
 
         this.soundManager.bubbleBurst(bubblesToDropLength);
@@ -206,9 +197,6 @@ class Game {
       this.soundManager.play("specEffects", "hit");
 
       const hitSide = this.collisionManager.determineHitSide(hitBubble);
-
-      // console.log("hitSide", hitSide);
-      // console.log("hitBubble", hitBubble.row, hitBubble.col);
 
       this.collisionManager.handleBubbleCollision(hitBubble, hitSide);
 
@@ -353,8 +341,6 @@ class Game {
   }
 
   handleMouseClick(): void {
-    // console.clear();
-    // console.log("CLICKED!");
     // calculate the direction of the shooter
     const dx = this.view.mousePosX - this.shooter.x;
     const dy = this.view.mousePosY - this.shooter.y;
