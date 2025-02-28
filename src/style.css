@@ -6,7 +6,7 @@
 
 @layer components {
   .logo {
-    @apply md:text-xl lg:text-6xl font-logo text-blue-900;
+    @apply md:text-xl lg:text-4xl font-logo text-blue-900;
   }
 
   .icon {
@@ -18,7 +18,7 @@
   }
 
   .action-btn {
-    @apply font-logo text-yellow-700 text-lg;
+    @apply font-logo text-yellow-700 text-lg lg:text-xl hover:underline hover:underline-offset-8 ease-in-out;
   }
 
   .game-over-message {

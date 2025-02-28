@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const highestScoreManager = new HighestScoreManager();
   const game = new Game(canvas, ctx, COLORS, soundManager);
 
-  // setupStartScreen(game);
+  setupStartScreen(game);
   setupGameOverScreen(game, highestScoreManager);
 
   const scoreElements = document.getElementsByClassName("score-value");
