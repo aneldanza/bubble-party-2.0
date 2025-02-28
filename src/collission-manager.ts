@@ -2,6 +2,7 @@ import Bubble from "./bubble";
 import GameView from "./game-view";
 import Shooter from "./shooter";
 import Observer from "./observer";
+import { hitSideType } from "./types";
 
 class CollisionManager {
   private view: GameView;
@@ -49,7 +50,6 @@ class CollisionManager {
   }
 
   handleTopBorderCollision(): void {
-    console.log("top border collision");
     // create a new bubble
     this._newBubble = new Bubble("active", 0, 0, this.shooter.color);
     this._newBubble.setPos(this.shooter.x, this.shooter.y);
@@ -59,7 +59,7 @@ class CollisionManager {
     const x = this._newBubble.x;
 
     // check if the first row is offset
-    const isOffset = row.length < this.view.maxCols;
+    const isOffset = row[0].isOffset;
 
     // calculate the column index for the new bubble
     const bubbleWidthWithMargin = this.view.radius * 2 + this.view.bubbleMargin;
@@ -83,9 +83,7 @@ class CollisionManager {
     this.newBubbleFormed.value = true;
   }
 
-  determineHitSide(
-    hitBubble: Bubble
-  ): "bottom-left" | "bottom-right" | "right" | "left" {
+  determineHitSide(hitBubble: Bubble): hitSideType {
     return (
       this.isBottomCollision(this.shooter.x, this.shooter.y, hitBubble) ||
       this.isSideCollision(this.shooter.x, hitBubble)
@@ -107,10 +105,7 @@ class CollisionManager {
     return shooterX > hitBubble.x ? "right" : "left";
   }
 
-  handleBubbleCollision(
-    hitBubble: Bubble,
-    hitSide: "bottom-left" | "bottom-right" | "left" | "right"
-  ): void {
+  handleBubbleCollision(hitBubble: Bubble, hitSide: hitSideType): void {
     const isOffsetRow = hitBubble.isOffset;
     const isFirstCol = hitBubble.col === 0;
 
@@ -118,7 +113,7 @@ class CollisionManager {
     this._newBubble.setPos(this.shooter.x, this.shooter.y);
 
     const isLastCol = isOffsetRow
-      ? hitBubble.col + 1 === this.view.maxCols - 1
+      ? hitBubble.col + 1 === this.view.maxColsWithOffset
       : hitBubble.col + 1 === this.view.maxCols;
 
     if (hitSide === "bottom-left" || hitSide === "bottom-right") {
@@ -205,7 +200,9 @@ class CollisionManager {
   }
 
   createNewEmptyRow(isOffset: boolean, row: number): Bubble[] {
-    const newRowLength = isOffset ? this.view.maxCols - 1 : this.view.maxCols;
+    const newRowLength = isOffset
+      ? this.view.maxColsWithOffset
+      : this.view.maxCols;
 
     const newRow = Array(newRowLength)
       .fill(new Bubble("inactive", 0, 0))
@@ -248,7 +245,6 @@ class CollisionManager {
   }
 
   handleRightCollision(hitBubble: Bubble, isLastCol: boolean): void {
-    // console.log("right side collision");
     if (isLastCol) {
       this.handleBottomCollision(
         hitBubble,
