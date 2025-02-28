@@ -6,6 +6,7 @@ import CollisionManager from "./collission-manager";
 import SoundManager from "./sound-manager";
 import { OFFSET_RELATIVE_POSITIONS, RELATIVE_POSITIONS } from "./constants";
 import { PlayMode } from "./types";
+import { set } from "firebase/database";
 
 class Game {
   public view: GameView;
@@ -358,7 +359,9 @@ class Game {
       // add a new row of bubbles after 5 moves
       if (this.shooter.moves > 3) {
         this.shooter.moves = 0;
-        this.addRow();
+        setTimeout(() => {
+          this.addRow();
+        }, 1000);
       }
     }
   }
