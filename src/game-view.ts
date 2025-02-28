@@ -17,8 +17,11 @@ class GameView implements Controls {
   public mousePosY: number;
   public maxRows: number;
   public maxCols: number;
+  public maxColsWithOffset: number;
   public bubbleMargin: number;
   public isOver: Observer<boolean>;
+  public handleMouseMoveRef: (e: MouseEvent) => void;
+  public handleTouchMoveRef: (e: TouchEvent) => void;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -31,13 +34,17 @@ class GameView implements Controls {
     this.canvas = canvas;
     this.ctx = ctx;
     this.maxCols = 0;
+    this.maxColsWithOffset = 0;
     this.maxRows = 0;
     this.bubbleMargin = 3;
     this.isOver = new Observer<boolean>(false);
 
     this.setBubbleRadius();
 
-    this.bindEvents();
+    this.handleMouseMoveRef = this.handleMouseMove.bind(this);
+    this.handleTouchMoveRef = this.handleTouchMove.bind(this);
+
+    this.subscribeWindowEvents();
   }
 
   init(shooter: Shooter): void {
@@ -59,7 +66,8 @@ class GameView implements Controls {
       this.canvas.height / (bubbleDiameter + this.bubbleMargin)
     );
 
-    console.log("max rows " + this.maxRows);
+    // Calculatee maxCols for offset rows
+    this.maxColsWithOffset = this.maxCols - 1;
   }
 
   resizeCanvas(): void {
@@ -67,64 +75,104 @@ class GameView implements Controls {
     this.calculateMaxRowsAndCols();
   }
 
-  bindEvents(): void {
+  subscribeWindowEvents(): void {
     window.addEventListener("resize", this.resizeCanvas.bind(this));
-    document.addEventListener("mousemove", (e) => this.handleMouseMove(e));
-    document.addEventListener("touchmove", (e) => this.handleTouchMove(e));
   }
 
   setBubbleRadius(): void {
     const navbar = document.getElementById("navbar")!;
+    const gameControls = document.getElementById("game-controls")!;
 
     // get bounding client rect for navbar and canvas
     const navbarRect = navbar.getBoundingClientRect();
+    const gameControlsRect = gameControls.getBoundingClientRect();
     const canvasRect = this.canvas.getBoundingClientRect();
 
     // set canvas with and height dynamically
     this.canvas.width = canvasRect.width;
     this.canvas.height = Math.min(
       canvasRect.height,
-      window.innerHeight - navbarRect.height * 2
+      window.innerHeight - (navbarRect.height + gameControlsRect.height)
     );
 
-    // calculate bubble radius based on canvas height
-    const bubbleRadius = this.canvas.height * 0.03;
+    // Define min and max radius based on canvas dimensions
+    const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.03; // 3% of the smaller dimension
 
-    this.radius = bubbleRadius;
-    this.bubbleMargin = bubbleRadius * 0.15;
-  }
+    let r = minRadius;
+    let bestRadius = r;
+    let bestBubbleMargin = r * 0.1;
+    let bestTotalBubbleWidth = 0;
+    const numCols = Math.floor(this.canvas.width / (2 * r + bestBubbleMargin));
 
-  // draw grid on canvas with radius spacing
-  drawGrid(): void {
-    this.ctx.beginPath();
-    this.ctx.strokeStyle = "gray";
-    this.ctx.lineWidth = 0.5;
-    this.ctx.setLineDash([10, 0]);
+    while (true) {
+      const bubbleMargin = r * 0.1;
+      const totalBubbleWidth = numCols * (2 * r + bubbleMargin);
 
-    for (let x = 0; x < this.canvas.width; x += this.radius) {
-      this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, this.canvas.height);
+      if (totalBubbleWidth > this.canvas.width) {
+        break;
+      }
+
+      bestRadius = r;
+      bestBubbleMargin = bubbleMargin;
+      bestTotalBubbleWidth = totalBubbleWidth;
+
+      r += 0.1;
     }
 
-    for (let y = 0; y < this.canvas.height; y += this.radius) {
-      this.ctx.moveTo(0, y);
-      this.ctx.lineTo(this.canvas.width, y);
-    }
-
-    this.ctx.stroke();
+    this.radius = bestRadius;
+    this.bubbleMargin = bestBubbleMargin;
   }
 
   draw(bubbles: Bubble[][], shooter: Shooter): void {
     this.shooter = shooter;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.drawBubble(this.shooter);
-    this.drawBubbles(bubbles);
-
     // Draw aim line only if shooter is not moving
     if (this.shooter.dx === 0 && this.shooter.dy === 0) {
       this.drawAimLine();
     }
+
+    this.drawBubble(this.shooter);
+    this.drawBubbles(bubbles);
+  }
+
+  hexToRgb(hex: string, alpha: number): string {
+    let r = 0,
+      g = 0,
+      b = 0;
+
+    // 3 digits
+    if (hex.length === 4) {
+      r = parseInt(hex[1] + hex[1], 16);
+      g = parseInt(hex[2] + hex[2], 16);
+      b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+      // 6 digits
+      r = parseInt(hex[1] + hex[2], 16);
+      g = parseInt(hex[3] + hex[4], 16);
+      b = parseInt(hex[5] + hex[6], 16);
+    }
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  addGradient(bubble: Bubble, bubbleRadius: number): void {
+    const gradient = this.ctx.createRadialGradient(
+      bubble.x - bubbleRadius / 4,
+      bubble.y - bubbleRadius / 4,
+      bubbleRadius / 80,
+      bubble.x,
+      bubble.y,
+      bubbleRadius
+    );
+
+    if (bubble.color === "#FFD700") {
+      gradient.addColorStop(0, "rgba(255, 255, 204, 1)");
+    } else {
+      gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+    }
+    gradient.addColorStop(1, bubble.color);
+    this.ctx.fillStyle = gradient;
   }
 
   drawBubble(bubble: Bubble): void {
@@ -133,29 +181,35 @@ class GameView implements Controls {
     this.ctx.fillStyle = bubble.color;
 
     if (bubble.status === "active") {
-      // make bubble more stylish add gradient
-      const gradient = this.ctx.createRadialGradient(
-        bubble.x - this.radius / 4,
-        bubble.y - this.radius / 4,
-        this.radius / 10,
-        bubble.x,
-        bubble.y,
-        this.radius
-      );
-      gradient.addColorStop(0, "white");
-      gradient.addColorStop(1, bubble.color);
-      this.ctx.fillStyle = gradient;
+      this.addGradient(bubble, this.radius);
+
+      // Apply shadow
+      this.ctx.shadowBlur = 10;
+      this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      this.ctx.shadowOffsetX = 3;
+      this.ctx.shadowOffsetY = 3;
     }
     this.ctx.fill();
   }
 
   drawAimLine(): void {
-    this.ctx.beginPath();
-    this.ctx.setLineDash([5, 15]);
-    this.ctx.moveTo(this.shooter.x, this.shooter.y);
-    this.ctx.lineTo(this.mousePosX, this.mousePosY);
-    this.ctx.strokeStyle = this.shooter.color;
-    this.ctx.stroke();
+    const dx = this.mousePosX - this.shooter.x;
+    const dy = this.mousePosY - this.shooter.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const step = this.radius * 2; // Distance between each small bubble
+    const steps = Math.floor(distance / step);
+
+    for (let i = 0; i < steps; i++) {
+      const t = i / steps;
+      const x = this.shooter.x + t * dx;
+      const y = this.shooter.y + t * dy;
+
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, this.radius / 8, 0, Math.PI * 2); // Small bubble radius
+      this.ctx.fillStyle = this.shooter.color;
+
+      this.ctx.fill();
+    }
   }
 
   drawBubbles(bubbles: Bubble[][]): void {
@@ -185,9 +239,8 @@ class GameView implements Controls {
         // check if bubble is touching the bottom border
         if (
           bubble.status === "active" &&
-          bubble.y + this.radius >= this.canvas.height
+          bubble.y + this.radius >= this.canvas.height - this.radius * 2
         ) {
-          console.log("TRIGGER GAME OVER FROM VIEW");
           this.isOver.value = true;
           return;
         }

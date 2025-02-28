@@ -16,18 +16,18 @@
   <body>
     <div
       id="app"
-      class="h-screen w-screen max-h-screen flex flex-col px-4 md:px-8 lg:px-16"
+      class="h-screen w-screen max-h-screen flex flex-col px-4 md:px-8 lg:px-16 bg-gradient-to-b from-blue-200 via-teal-200 to-yellow-100"
     >
       <nav
         id="navbar"
-        class="h-16 lg:h-24 flex justify-between items-center py-4"
+        class="h-20 lg:h-24 grid grid-cols-2 md:grid-cols-3 items-center py-4"
       >
         <div class="logo">Bubble Party</div>
-        <div class="btn action-btn" id="score">
+        <div class="btn action-btn md:place-self-center text-2xl" id="score">
           <span>Score:</span>
           <span class="score-value">0</span>
         </div>
-        <nav class="flex gap-4 items-center text-sm">
+        <nav class="flex gap-4 items-center text-sm justify-self-end">
           <a
             href="https://www.linkedin.com/in/anel-danza-a9591868/"
             target="_blank"
@@ -75,25 +75,6 @@
         </nav>
       </nav>
       <main id="game-container" class="flex-grow relative">
-        <div
-          id="game-over"
-          class="absolute top-0 left-0 w-full h-full hidden flex-col gap-8 items-center justify-center bg-gray-900 opacity-90 text-white"
-        >
-          <span class="game-over-message">GAME OVER</span>
-          <div class="score">
-            <span>Highest Score</span>
-            <span id="highest-score"></span>
-          </div>
-          <div class="score">
-            <span>Your Score</span>
-            <span class="score-value"></span>
-          </div>
-          <span
-            id="play-again"
-            class="font-logo text-red-500 text-xl border rounded p-6 tracking-widest cursor-pointer"
-            >Play Again</span
-          >
-        </div>
         <canvas
           id="game-canvas"
           class="w-full h-full max-w-[700px] flex shadow-gray-400 rounded shadow m-auto"
