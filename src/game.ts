@@ -6,7 +6,6 @@ import CollisionManager from "./collission-manager";
 import SoundManager from "./sound-manager";
 import { OFFSET_RELATIVE_POSITIONS, RELATIVE_POSITIONS } from "./constants";
 import { PlayMode } from "./types";
-import { set } from "firebase/database";
 
 class Game {
   public view: GameView;

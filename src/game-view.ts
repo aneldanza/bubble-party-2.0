@@ -96,7 +96,7 @@ class GameView implements Controls {
     );
 
     // Define min and max radius based on canvas dimensions
-    const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.025; // 2.5% of the smaller dimension
+    const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.03; // 3% of the smaller dimension
 
     let r = minRadius;
     let bestRadius = r;
