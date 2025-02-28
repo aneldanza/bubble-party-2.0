@@ -101,7 +101,6 @@ class GameView implements Controls {
     let r = minRadius;
     let bestRadius = r;
     let bestBubbleMargin = r * 0.1;
-    let bestTotalBubbleWidth = 0;
     const numCols = Math.floor(this.canvas.width / (2 * r + bestBubbleMargin));
 
     while (true) {
@@ -114,7 +113,6 @@ class GameView implements Controls {
 
       bestRadius = r;
       bestBubbleMargin = bubbleMargin;
-      bestTotalBubbleWidth = totalBubbleWidth;
 
       r += 0.1;
     }
