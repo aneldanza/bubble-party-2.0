@@ -2,7 +2,7 @@ import Game from "./game";
 import { PlayMode } from "./types";
 
 export function setupStartScreen(game: Game): void {
-  fetch("./views/setup-screen.html")
+  fetch("src/views/setup-screen.html")
     .then((response) => response.text())
     .then((html) => {
       const setupScreenContainer = document.createElement("div");
