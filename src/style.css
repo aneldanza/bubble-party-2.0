@@ -6,7 +6,7 @@
 
 @layer components {
   .logo {
-    @apply md:text-xl lg:text-4xl font-logo text-blue-900;
+    @apply hidden md:block md:text-2xl lg:text-4xl font-logo text-blue-900;
   }
 
   .icon {
@@ -22,7 +22,7 @@
   }
 
   .game-over-message {
-    @apply font-logo text-6xl text-red-500;
+    @apply font-logo text-5xl md:text-6xl text-red-500;
   }
 
   .settings-btn {
@@ -34,7 +34,7 @@
   }
 
   .mode-svg {
-    @apply hidden absolute -left-16;
+    @apply hidden absolute -left-10 md:-left-12 lg:-left-16;
   }
 
   .mode-svg.selected {

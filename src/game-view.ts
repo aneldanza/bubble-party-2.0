@@ -78,16 +78,18 @@ class GameView implements Controls {
 
   setBubbleRadius(): void {
     const navbar = document.getElementById("navbar")!;
+    const gameControls = document.getElementById("game-controls")!;
 
     // get bounding client rect for navbar and canvas
     const navbarRect = navbar.getBoundingClientRect();
+    const gameControlsRect = gameControls.getBoundingClientRect();
     const canvasRect = this.canvas.getBoundingClientRect();
 
     // set canvas with and height dynamically
     this.canvas.width = canvasRect.width;
     this.canvas.height = Math.min(
       canvasRect.height,
-      window.innerHeight - navbarRect.height * 2
+      window.innerHeight - (navbarRect.height + gameControlsRect.height)
     );
 
     // calculate bubble radius based on canvas height
