@@ -34,10 +34,12 @@ export function setupGameOverScreen(
           const score = game.score.value;
           const highScore = highestScoreManager.highestScore;
           if (highScore == null || score > highScore) {
-            highestScoreManager.setHighScore(score);
+            await highestScoreManager.setHighScore(score);
           }
           gameOverElement.style.display = "flex";
-          highestScoreElement.textContent = highScore.toString();
+          highestScoreElement.textContent = highestScoreManager.highestScore
+            ? highestScoreManager.highestScore.toString()
+            : "0";
         } else {
           gameOverElement.style.display = "none";
         }

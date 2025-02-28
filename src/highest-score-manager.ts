@@ -2,7 +2,7 @@ import { db } from "./firebase";
 import { DatabaseReference, ref, onValue, set, get } from "firebase/database";
 
 class HighestScoreManager {
-  highestScore: number;
+  highestScore: number | null;
   highScoreRef: DatabaseReference;
 
   constructor() {
@@ -39,6 +39,7 @@ class HighestScoreManager {
   // Function to update the highest score in real-time
   subscribeToHighScoreUpdates(): void {
     onValue(this.highScoreRef, (snapshot) => {
+      console.log("High score updated: ", snapshot.val());
       const data = snapshot.val();
       this.highestScore = data;
     });
