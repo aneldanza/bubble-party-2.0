@@ -1,21 +1,13 @@
 import { SoundsObject } from "./types";
 
 export const COLORS: string[] = [
-  "#F9E400", // yellow
-  "#F4A7B9", // pink
-  "#6C9D3D", // green
-  "#7C4DFF", // purple
-  "#00B8D4", // blue
-  "#FF9A3D", // orange
+  "#FFD700", // Saturated Bright Yellow
+  "#FF1493", // Deep Pink (vibrant)
+  "#32CD32", // Lime Green (super bright)
+  "#8A2BE2", // Blue Violet (rich purple)
+  "#1E90FF", // Dodger Blue (bright blue)
+  "#FF4500", // Orange Red (bright and bold)
 ];
-// export const COLORS: string[] = [
-//   "#FF69B4", // pink
-//   "#4169E1", // royal blue
-//   "#32CD32", // lime green
-//   "#FFD700", // gold
-//   "#9370DB", // medium purple
-//   "#FF4500", // red-orange
-// ];
 
 export const OFFSET_RELATIVE_POSITIONS = [
   { ROW: 0, COL: -1 },
