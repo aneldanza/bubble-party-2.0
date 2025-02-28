@@ -48,6 +48,4 @@ document.addEventListener("DOMContentLoaded", () => {
   pauseButton.addEventListener("click", () => {
     game.isPaused.value = !game.isPaused.value;
   });
-
-  game.start();
 });
