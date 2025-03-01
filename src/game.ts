@@ -20,6 +20,7 @@ class Game {
   private soundManager: SoundManager;
   public isPaused: Observer<boolean>;
   private handleMouseClickRef: (e: MouseEvent) => void = () => {};
+  private handleTouchEndRef: (e: TouchEvent) => void = () => {};
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -45,6 +46,7 @@ class Game {
     );
 
     this.handleMouseClickRef = this.handleMouseClick.bind(this);
+    this.handleTouchEndRef = this.handleTouchEnd.bind(this);
     this.subscribeObserverEvents();
   }
 
@@ -332,15 +334,25 @@ class Game {
     this.canvas.addEventListener("mousemove", this.view.handleMouseMoveRef);
     this.canvas.addEventListener("touchmove", this.view.handleTouchMoveRef);
     this.canvas.addEventListener("click", this.handleMouseClickRef);
+    this.canvas.addEventListener("touchend", this.handleTouchEndRef);
   }
 
   unSubscribeUserEvents(): void {
     this.canvas.removeEventListener("mousemove", this.view.handleMouseMoveRef);
     this.canvas.removeEventListener("touchmove", this.view.handleTouchMoveRef);
     this.canvas.removeEventListener("click", this.handleMouseClickRef);
+    this.canvas.removeEventListener("touchend", this.handleTouchEndRef);
   }
 
   handleMouseClick(): void {
+    this.shootBubble();
+  }
+
+  handleTouchEnd(): void {
+    this.shootBubble();
+  }
+
+  shootBubble(): void {
     // calculate the direction of the shooter
     const dx = this.view.mousePosX - this.shooter.x;
     const dy = this.view.mousePosY - this.shooter.y;
