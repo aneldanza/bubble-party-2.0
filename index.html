@@ -88,6 +88,132 @@
         </div>
       </nav>
       <footer></footer>
+
+      <!-- Start Screen  -->
+      <div id="setup-screen-container" class="screen">
+        <div
+          class="flex flex-col items-center justify-center bg-blue-200 text-pink-300 gap-20 p-4 h-full"
+        >
+          <div
+            class="font-logo text-5xl md:text-6xl text-blue-900 tracking-wide flex shrink justify-center"
+          >
+            Bubble Party
+          </div>
+          <nav class="flex flex-col gap-4 items-center text-sm">
+            <div class="flex items-center relative">
+              <div id="relaxed-mode-svg" class="mode-svg" data-mode="relaxed">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 576 512"
+                  fill="#F4A7B9"
+                  class="size-6"
+                >
+                  <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                  <path
+                    d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"
+                  />
+                </svg>
+              </div>
+              <div id="relaxed" class="play-mode">Relaxed Mode</div>
+            </div>
+
+            <div class="flex items-center relative">
+              <div id="time-limit-svg" class="mode-svg" data-mode="time-limit">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 576 512"
+                  fill="#F4A7B9"
+                  class="size-6"
+                >
+                  <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                  <path
+                    d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"
+                  />
+                </svg>
+              </div>
+              <div id="time-limit" class="play-mode">Time Limit</div>
+            </div>
+          </nav>
+          <button id="start-game" class="settings-btn">Start</button>
+          <div>
+            <nav class="flex gap-4 items-center text-sm">
+              <a
+                href="https://www.linkedin.com/in/anel-danza-a9591868/"
+                target="_blank"
+              >
+                <svg
+                  class="icon"
+                  role="img"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <title>LinkedIn</title>
+                  <path
+                    d="M22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0ZM7.12 20.45H3.56V9h3.56v11.45ZM5.34 7.5c-1.14 0-2.06-.92-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 0 2.06.92 2.06 2.06 0 1.14-.92 2.06-2.06 2.06ZM20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.44-2.14 2.93v5.68h-3.56V9h3.42v1.56h.05c.48-.9 1.65-1.85 3.4-1.85 3.64 0 4.31 2.39 4.31 5.5v6.24Z"
+                  />
+                </svg>
+              </a>
+
+              <a href="https://github.com/aneldanza" target="_blank">
+                <svg
+                  class="icon"
+                  role="img"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <title>GitHub</title>
+                  <path
+                    d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.207 11.385.6.113.793-.26.793-.577v-2.245c-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.746.083-.73.083-.73 1.205.085 1.838 1.237 1.838 1.237 1.07 1.835 2.807 1.305 3.49.998.108-.774.418-1.306.76-1.606-2.665-.305-5.467-1.333-5.467-5.93 0-1.31.468-2.38 1.236-3.22-.123-.304-.536-1.524.117-3.176 0 0 1.008-.322 3.3 1.23a11.52 11.52 0 0 1 3.003-.404c1.018.004 2.043.137 3.002.404 2.29-1.552 3.296-1.23 3.296-1.23.656 1.652.244 2.872.12 3.176.77.84 1.236 1.91 1.236 3.22 0 4.61-2.807 5.624-5.48 5.922.43.37.823 1.103.823 2.222v3.293c0 .32.19.694.8.576C20.565 21.796 24 17.296 24 12c0-6.63-5.37-12-12-12Z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="https://personal-portfolio-aneldanzas-projects.vercel.app/"
+                target="_blank"
+              >
+                <img
+                  class="icon"
+                  src="/portfolio-icon.svg"
+                  alt="portfolio"
+                  width="24"
+                  height="24"
+                />
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Screen  -->
+      <div id="game-over" class="screen hidden">
+        <div
+          id=""
+          class="h-full w-screen flex flex-col gap-20 items-center justify-center bg-gradient-to-r from-pink-100 via-blue-200 to-pink-100 text-white"
+        >
+          <span class="game-over-message">GAME OVER</span>
+
+          <div class="flex flex-col gap-4 items-center">
+            <div class="score">
+              <span>Highest Score</span>
+              <span id="highest-score"></span>
+            </div>
+            <div class="score">
+              <span>Your Score</span>
+              <span class="score-value">0</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-6 items-center">
+            <button id="play-again" class="settings-btn">Play Again</button>
+
+            <button id="go-to-start" class="settings-btn">
+              Go to Main Screen
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
