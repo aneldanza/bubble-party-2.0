@@ -13,10 +13,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bubble Party</title>
   </head>
-  <body>
+  <body class="overflow-hidden">
     <div
       id="app"
-      class="h-screen w-screen max-h-screen flex flex-col px-4 md:px-8 lg:px-16 bg-gradient-to-b from-blue-200 via-teal-200 to-yellow-100"
+      class="h-screen w-screen overflow-hiddens max-h-screen flex flex-col px-4 md:px-8 lg:px-16 bg-gradient-to-b from-blue-200 via-teal-200 to-yellow-100 justify-center"
     >
       <nav
         id="navbar"
@@ -74,7 +74,7 @@
           </a>
         </nav>
       </nav>
-      <main id="game-container" class="flex-grow relative">
+      <main id="game-container" class="h-2/3 lg:flex-grow relative">
         <canvas
           id="game-canvas"
           class="w-full h-full max-w-[700px] flex shadow-gray-400 rounded shadow m-auto"
