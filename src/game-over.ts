@@ -1,13 +1,14 @@
 import Game from "./game";
 import HighestScoreManager from "./highest-score-manager";
-import { setupStartScreen } from "./setup";
 
 export function setupGameOverScreen(
   game: Game,
   highestScoreManager: HighestScoreManager
 ): void {
   const gameOverContainer = document.createElement("div");
-  gameOverContainer.id = "game-over-container";
+  gameOverContainer.id = "game-over";
+  gameOverContainer.classList.add("screen");
+  gameOverContainer.style.display = "none";
   document.body.appendChild(gameOverContainer);
 
   fetch("/views/game-over.html")
@@ -50,7 +51,7 @@ export function setupGameOverScreen(
         if (startScreenContainer) {
           startScreenContainer.style.visibility = "visible";
         } else {
-          setupStartScreen(game);
+          // setupStartScreen(game);
         }
       });
     })

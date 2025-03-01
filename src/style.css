@@ -44,4 +44,8 @@
   .score {
     @apply text-xl text-white font-mono font-semibold;
   }
+
+  .screen {
+    @apply absolute top-0 left-0 w-full h-screen;
+  }
 }

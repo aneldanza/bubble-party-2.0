@@ -7,6 +7,7 @@ export function setupStartScreen(game: Game): void {
     .then((html) => {
       const setupScreenContainer = document.createElement("div");
       setupScreenContainer.id = "setup-screen-container";
+      setupScreenContainer.classList.add("screen");
       document.body.appendChild(setupScreenContainer);
       setupScreenContainer.innerHTML = html;
 
