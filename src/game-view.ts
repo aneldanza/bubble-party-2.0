@@ -95,6 +95,9 @@ class GameView implements Controls {
       window.innerHeight - (navbarRect.height + gameControlsRect.height)
     );
 
+    this.canvas.height =
+      window.innerHeight - (navbarRect.height + gameControlsRect.height);
+
     // Define min and max radius based on canvas dimensions
     const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.03; // 3% of the smaller dimension
 
