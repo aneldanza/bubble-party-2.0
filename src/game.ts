@@ -56,7 +56,6 @@ class Game {
   }
 
   gameOver(): void {
-    console.log("GAME OVER");
     this.soundManager.gameOver();
 
     this.userInputManager.unSubscribeUserEvents();
@@ -91,14 +90,6 @@ class Game {
     }
   }
 
-  // resetShooter(): void {
-  //   this.shooter.reset(
-  //     this.view.canvas.width / 2,
-  //     this.view.canvas.height - this.view.radius,
-  //     this.view.getRandColor()
-  //   );
-  // }
-
   subscribeObserverEvents(): void {
     this.view.isOver.subscribe(() => {
       if (this.view.isOver.value) {
@@ -125,7 +116,6 @@ class Game {
     if (this.playMode.value === "relaxed") {
       // increase move count
       this.shooter.moves++;
-      console.log("number of moves " + this.shooter.moves);
 
       // add a new row of bubbles after 5 moves
       if (this.shooter.moves > 3) {
