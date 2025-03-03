@@ -39,7 +39,6 @@ class HighestScoreManager {
   // Function to update the highest score in real-time
   subscribeToHighScoreUpdates(): void {
     onValue(this.highScoreRef, (snapshot) => {
-      console.log("High score updated: ", snapshot.val());
       const data = snapshot.val();
       this.highestScore = data;
     });

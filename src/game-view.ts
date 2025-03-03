@@ -20,6 +20,7 @@ class GameView implements Controls {
   public maxColsWithOffset: number;
   public bubbleMargin: number;
   public isOver: Observer<boolean>;
+  private nextBubble!: Bubble;
   public handleMouseMoveRef: (e: MouseEvent) => void;
   public handleTouchMoveRef: (e: TouchEvent) => void;
 
@@ -39,6 +40,8 @@ class GameView implements Controls {
     this.bubbleMargin = 3;
     this.isOver = new Observer<boolean>(false);
 
+    this.nextBubble = new Bubble("active", 0, 0, this.getRandColor());
+
     this.setBubbleRadius();
 
     this.handleMouseMoveRef = this.handleMouseMove.bind(this);
@@ -51,6 +54,11 @@ class GameView implements Controls {
     this.shooter = shooter;
     this.shooter.setPos(
       this.canvas.width / 2,
+      this.canvas.height - this.radius
+    );
+
+    this.nextBubble.setPos(
+      this.canvas.width / 5,
       this.canvas.height - this.radius
     );
     this.calculateMaxRowsAndCols();
@@ -77,6 +85,16 @@ class GameView implements Controls {
 
   subscribeWindowEvents(): void {
     window.addEventListener("resize", this.resizeCanvas.bind(this));
+  }
+
+  resetShooter(): void {
+    this.shooter.reset(
+      this.canvas.width / 2,
+      this.canvas.height - this.radius,
+      this.nextBubble.color
+    );
+
+    this.nextBubble.color = this.getRandColor();
   }
 
   setBubbleRadius(): void {
@@ -134,6 +152,7 @@ class GameView implements Controls {
     }
 
     this.drawBubble(this.shooter);
+    this.drawNextBubblePreviewSection();
     this.drawBubbles(bubbles);
   }
 
@@ -176,6 +195,14 @@ class GameView implements Controls {
     this.ctx.fillStyle = gradient;
   }
 
+  addShadow(): void {
+    // Apply shadow
+    this.ctx.shadowBlur = 10;
+    this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    this.ctx.shadowOffsetX = 3;
+    this.ctx.shadowOffsetY = 3;
+  }
+
   drawBubble(bubble: Bubble): void {
     this.ctx.beginPath();
     this.ctx.arc(bubble.x, bubble.y, this.radius, 0, Math.PI * 2);
@@ -184,13 +211,13 @@ class GameView implements Controls {
     if (bubble.status === "active") {
       this.addGradient(bubble, this.radius);
 
-      // Apply shadow
-      this.ctx.shadowBlur = 10;
-      this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      this.ctx.shadowOffsetX = 3;
-      this.ctx.shadowOffsetY = 3;
+      this.addShadow();
     }
     this.ctx.fill();
+  }
+
+  drawNextBubblePreviewSection(): void {
+    this.drawBubble(this.nextBubble);
   }
 
   drawAimLine(): void {

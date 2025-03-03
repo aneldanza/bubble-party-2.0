@@ -2,11 +2,11 @@ import { SoundsObject } from "./types";
 
 export const COLORS: string[] = [
   "#FFD700", // Saturated Bright Yellow
-  "#FF1493", // Deep Pink (vibrant)
-  "#32CD32", // Lime Green (super bright)
-  "#8A2BE2", // Blue Violet (rich purple)
-  "#1E90FF", // Dodger Blue (bright blue)
-  "#FF4500", // Orange Red (bright and bold)
+  "#FF6EC7", // Stronger Bright Pink
+  "#32CD32", // Lime Green
+  "#8A2BE2", // Blue Violet
+  "#1E90FF", // Dodger Blue
+  "#FF7F32", // Bright Orange
 ];
 
 export const OFFSET_RELATIVE_POSITIONS = [
