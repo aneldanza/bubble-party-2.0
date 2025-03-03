@@ -10,7 +10,6 @@ import { PlayMode } from "./types";
 class Game {
   public view: GameView;
   private collisionManager: CollisionManager;
-
   private shooter: Shooter;
   private bubbles: Bubble[][];
   public moves: number;
@@ -19,6 +18,7 @@ class Game {
   private canvas: HTMLCanvasElement;
   private soundManager: SoundManager;
   public isPaused: Observer<boolean>;
+  private isTouchEvent: boolean = false;
   private handleMouseClickRef: (e: MouseEvent) => void = () => {};
   private handleTouchEndRef: (e: TouchEvent) => void = () => {};
 
@@ -345,10 +345,14 @@ class Game {
   }
 
   handleMouseClick(): void {
-    this.shootBubble();
+    if (!this.isTouchEvent) {
+      this.shootBubble();
+    }
+    this.isTouchEvent = false;
   }
 
   handleTouchEnd(): void {
+    this.isTouchEvent = true;
     this.shootBubble();
   }
 
@@ -366,7 +370,7 @@ class Game {
     if (this.playMode.value === "relaxed") {
       // increase move count
       this.shooter.moves++;
-      console.log("number of moves" + this.shooter.moves);
+      console.log("number of moves " + this.shooter.moves);
 
       // add a new row of bubbles after 5 moves
       if (this.shooter.moves > 3) {
