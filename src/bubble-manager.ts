@@ -99,7 +99,7 @@ class BubbleManager {
       throw new Error("new bubble was not created on collision");
     }
 
-    this.game.resetShooter();
+    this.game.view.resetShooter();
 
     // reset new bubble flag
     this.collisionManager.newBubbleFormed.value = false;
@@ -134,8 +134,6 @@ class BubbleManager {
       const hitSide = this.collisionManager.determineHitSide(hitBubble);
 
       this.collisionManager.handleBubbleCollision(hitBubble, hitSide);
-
-      this.game.resetShooter();
     }
   }
 
