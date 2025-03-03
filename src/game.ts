@@ -363,10 +363,11 @@ class Game {
       (dy / length) * this.shooter.speed
     );
 
-    // increase move count
-    this.shooter.moves++;
-
     if (this.playMode.value === "relaxed") {
+      // increase move count
+      this.shooter.moves++;
+      console.log("number of moves" + this.shooter.moves);
+
       // add a new row of bubbles after 5 moves
       if (this.shooter.moves > 3) {
         this.shooter.moves = 0;
