@@ -152,7 +152,7 @@ class GameView implements Controls {
     }
 
     this.drawBubble(this.shooter);
-    this.drawBubble(this.nextBubble);
+    this.drawNextBubblePreviewSection();
     this.drawBubbles(bubbles);
   }
 
@@ -195,6 +195,14 @@ class GameView implements Controls {
     this.ctx.fillStyle = gradient;
   }
 
+  addShadow(): void {
+    // Apply shadow
+    this.ctx.shadowBlur = 10;
+    this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    this.ctx.shadowOffsetX = 3;
+    this.ctx.shadowOffsetY = 3;
+  }
+
   drawBubble(bubble: Bubble): void {
     this.ctx.beginPath();
     this.ctx.arc(bubble.x, bubble.y, this.radius, 0, Math.PI * 2);
@@ -203,13 +211,13 @@ class GameView implements Controls {
     if (bubble.status === "active") {
       this.addGradient(bubble, this.radius);
 
-      // Apply shadow
-      this.ctx.shadowBlur = 10;
-      this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      this.ctx.shadowOffsetX = 3;
-      this.ctx.shadowOffsetY = 3;
+      this.addShadow();
     }
     this.ctx.fill();
+  }
+
+  drawNextBubblePreviewSection(): void {
+    this.drawBubble(this.nextBubble);
   }
 
   drawAimLine(): void {

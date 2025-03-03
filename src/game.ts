@@ -118,7 +118,7 @@ class Game {
       this.shooter.moves++;
 
       // add a new row of bubbles after 5 moves
-      if (this.shooter.moves > 3) {
+      if (this.shooter.moves > 5) {
         this.shooter.moves = 0;
         setTimeout(() => {
           this.bubbleManager.addRow();
