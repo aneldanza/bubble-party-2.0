@@ -346,13 +346,19 @@ class Game {
 
   handleMouseClick(): void {
     if (!this.isTouchEvent) {
+      console.log("mouse click");
       this.shootBubble();
     }
     this.isTouchEvent = false;
   }
 
-  handleTouchEnd(): void {
+  handleTouchEnd(e: TouchEvent): void {
     this.isTouchEvent = true;
+    console.log("touch end");
+    const rect = this.canvas.getBoundingClientRect();
+    const touch = e.changedTouches[0]; // Use changedTouches instead of touches
+    this.view.mousePosX = touch.clientX - rect.left;
+    this.view.mousePosY = touch.clientY - rect.top;
     this.shootBubble();
   }
 
