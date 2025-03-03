@@ -20,6 +20,8 @@ class GameView implements Controls {
   public maxColsWithOffset: number;
   public bubbleMargin: number;
   public isOver: Observer<boolean>;
+  private nextBubbleColor: string;
+  private nextBubble!: Bubble;
   public handleMouseMoveRef: (e: MouseEvent) => void;
   public handleTouchMoveRef: (e: TouchEvent) => void;
 
@@ -38,6 +40,8 @@ class GameView implements Controls {
     this.maxRows = 0;
     this.bubbleMargin = 3;
     this.isOver = new Observer<boolean>(false);
+    this.nextBubbleColor = this.getRandColor();
+    this.nextBubble = new Bubble("active", 0, 0, this.nextBubbleColor);
 
     this.setBubbleRadius();
 
@@ -51,6 +55,11 @@ class GameView implements Controls {
     this.shooter = shooter;
     this.shooter.setPos(
       this.canvas.width / 2,
+      this.canvas.height - this.radius
+    );
+
+    this.nextBubble.setPos(
+      this.canvas.width / 5,
       this.canvas.height - this.radius
     );
     this.calculateMaxRowsAndCols();
@@ -77,6 +86,21 @@ class GameView implements Controls {
 
   subscribeWindowEvents(): void {
     window.addEventListener("resize", this.resizeCanvas.bind(this));
+  }
+
+  resetShooter(): void {
+    this.shooter.reset(
+      this.canvas.width / 2,
+      this.canvas.height - this.radius,
+      this.nextBubbleColor
+    );
+
+    this.nextBubbleColor = this.getRandColor();
+    this.nextBubble.color = this.nextBubbleColor;
+  }
+
+  setNextBubbleColor(): void {
+    this.nextBubbleColor = this.getRandColor();
   }
 
   setBubbleRadius(): void {
@@ -134,6 +158,7 @@ class GameView implements Controls {
     }
 
     this.drawBubble(this.shooter);
+    this.drawBubble(this.nextBubble);
     this.drawBubbles(bubbles);
   }
 

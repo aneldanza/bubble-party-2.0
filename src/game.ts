@@ -36,7 +36,7 @@ class Game {
   }
 
   reset(): void {
-    this.resetShooter();
+    this.view.resetShooter();
     this.bubbleManager.resetBubbles();
     this.score.value = 0;
     this.shooter.moves = 0;
@@ -91,13 +91,13 @@ class Game {
     }
   }
 
-  resetShooter(): void {
-    this.shooter.reset(
-      this.view.canvas.width / 2,
-      this.view.canvas.height - this.view.radius,
-      this.view.getRandColor()
-    );
-  }
+  // resetShooter(): void {
+  //   this.shooter.reset(
+  //     this.view.canvas.width / 2,
+  //     this.view.canvas.height - this.view.radius,
+  //     this.view.getRandColor()
+  //   );
+  // }
 
   subscribeObserverEvents(): void {
     this.view.isOver.subscribe(() => {
