@@ -38,8 +38,8 @@ To install and run Bubble Party locally, follow these steps:
 
 1. **Clone the repository**:
    ```sh
-   git clone https://github.com/your-username/bubble-party.git
-   cd bubble-party
+   git clone https://github.com/aneldanza/bubble-party-2.0.git
+   cd bubble-party-2.0
    ```
 2. **Install dependencies**:
 
