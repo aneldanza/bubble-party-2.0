@@ -1,7 +1,8 @@
 # Bubble Party
 
-![Screenshot](public/screenshot.png)
-_Gameplay Screenshot_
+<div align="center">
+  <img src="public/screenshot.png" alt="Gameplay Screenshot" width="300" />
+</div>
 
 ## Description
 
