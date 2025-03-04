@@ -5,16 +5,32 @@ _Gameplay Screenshot_
 
 ## Description
 
-Bubble Party is a game inspired by the classic arcade game Bubble Shooter and the SpongeBob cartoon. This engaging game allows users to pop bubbles to gain score points. The game starts with a single player, and bubbles of different colors continuously grow from the top of the game area. The player needs to hit bubbles that are adjacent to two or more bubbles of the same color. There are two play modes: relaxed and time-limit.
+Bubble Party is a fun and addictive game inspired by the classic Bubble Shooter arcade game and the SpongeBob cartoon. In this engaging experience, players aim to pop bubbles and score points. The game begins with a single player, and bubbles of various colors continuously appear from the top of the screen. To score, players must match and hit bubbles that are adjacent to two or more bubbles of the same color.
 
-### Main Features:
+There are two exciting play modes: Relaxed mode for a laid-back experience and Time-Limit mode for those who love a challenge.
 
-- Start and quit the game at any time
-- Ability to shoot bubbles
-- Accumulative score system
-- Three or more adjacent bubbles of the same color create a cluster and drop if one of them is shot
-- Game over when the main mass of bubbles reaches the bottom of the game area
-- Option to play sound effects or mute them
+Bubble Party features a responsive design, making it fully compatible with desktop, tablet, and mobile browsers for a smooth and enjoyable gaming experience anywhere.
+
+## Usage
+
+### How to Play
+
+- **Shoot Bubbles**: Tap anywhere on the game canvas to shoot the shooter bubble in the direction you choose. The bubble will stick to the first one it touches.
+- **Bounce Bubbles**: The shooter bubble can bounce off walls. Use this to aim and reach difficult spots.
+- **Burst Bubbles**: Match three or more bubbles of the same color to make them pop.
+- **Score Points**: Your score increases based on the number of bubbles you burst with each shot.
+- **Controls**:
+  - **Mute**: Toggle sound effects on or off.
+  - **Pause**: Pause the game at any time.
+  - **Quit**: Exit the game.
+
+Enjoy playing Bubble Party!
+
+## Technologies Used
+
+- Vite
+- TypeScript
+- TailwindCSS
 
 ## Installation
 
@@ -38,27 +54,6 @@ To install and run Bubble Party locally, follow these steps:
    ```
 
 4. **Open your browser** and navigate to `http://localhost:3000`
-
-## Usage
-
-### How to Play
-
-- **Shoot Bubbles**: Tap on the game canvas to shoot the shooter bubble in the desired direction. The shooter bubble will stick to the first bubble it hits.
-- **Bounce Bubbles**: The shooter bubble will bounce off the walls. You can use this technique to place the shooter in hard-to-reach places.
-- **Burst Bubbles**: Connect three or more bubbles of the same color to burst them.
-- **Score Points**: Your score increases by the number of bubbles popped each time they burst.
-- **Controls**:
-  - **Mute**: Toggle sound effects on or off.
-  - **Pause**: Pause the game.
-  - **Quit**: Quit the game.
-
-Enjoy playing Bubble Party!
-
-## Technologies Used
-
-- Vite
-- TypeScript
-- TailwindCSS
 
 ## Contributing
 
