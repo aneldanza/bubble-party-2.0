@@ -1,5 +1,8 @@
 # Bubble Party
 
+![Screenshot](public/screenshot.png)
+_Gameplay Screenshot_
+
 ## Description
 
 Bubble Party is a game inspired by the classic arcade game Bubble Shooter and the SpongeBob cartoon. This engaging game allows users to pop bubbles to gain score points. The game starts with a single player, and bubbles of different colors continuously grow from the top of the game area. The player needs to hit bubbles that are adjacent to two or more bubbles of the same color. There are two play modes: relaxed and time-limit.
@@ -50,13 +53,6 @@ To install and run Bubble Party locally, follow these steps:
   - **Quit**: Quit the game.
 
 Enjoy playing Bubble Party!
-
-## Screenshots
-
-Here is a screenshot of Bubble Party:
-
-![Screenshot](public/screenshot.png)
-_Gameplay Screenshot_
 
 ## Technologies Used
 
