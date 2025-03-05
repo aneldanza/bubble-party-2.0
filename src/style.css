@@ -26,7 +26,7 @@
   }
 
   .settings-btn {
-    @apply bg-yellow-400 text-white py-2 px-4 rounded-lg border-4 border-orange-500 hover:bg-yellow-500 hover:border-orange-600 transform hover:scale-105 transition duration-300 ease-in-out font-logo text-lg tracking-wide cursor-pointer;
+    @apply bg-yellow-400 text-white py-2 px-4 rounded-lg border-4 border-amber-500 hover:bg-yellow-500 hover:border-amber-600 transform hover:scale-105 transition duration-300 ease-in-out font-logo text-xl tracking-wide cursor-pointer;
   }
 
   .play-mode {
@@ -42,7 +42,7 @@
   }
 
   .score {
-    @apply text-xl text-white font-mono font-semibold;
+    @apply text-xl text-amber-800 font-mono font-semibold;
   }
 
   .screen {
