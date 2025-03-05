@@ -6,7 +6,15 @@
 
 @layer components {
   .logo {
-    @apply hidden md:block md:text-2xl lg:text-4xl font-logo text-blue-900;
+    @apply font-logo text-blue-900;
+    @apply bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500;
+    @apply text-transparent bg-clip-text;
+    @apply transition-transform duration-300 ease-in-out;
+    @apply hover:scale-110;
+
+    /* Add 3D effect with text shadows */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1), 2px 2px 4px rgba(0, 0, 0, 0.1),
+      3px 3px 6px rgba(0, 0, 0, 0.1), 4px 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   .icon {
