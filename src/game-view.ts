@@ -21,8 +21,6 @@ class GameView implements Controls {
   public bubbleMargin: number;
   public isOver: Observer<boolean>;
   private nextBubble!: Bubble;
-  public handleMouseMoveRef: (e: MouseEvent) => void;
-  public handleTouchMoveRef: (e: TouchEvent) => void;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -44,14 +42,15 @@ class GameView implements Controls {
 
     this.setBubbleRadius();
 
-    this.handleMouseMoveRef = this.handleMouseMove.bind(this);
-    this.handleTouchMoveRef = this.handleTouchMove.bind(this);
+    // this.handleMouseMoveRef = this.handleMouseMove.bind(this);
+    // this.handleTouchMoveRef = this.handleTouchMove.bind(this);
 
     this.subscribeWindowEvents();
   }
 
   init(shooter: Shooter): void {
     this.shooter = shooter;
+    this.resizeCanvas();
     this.shooter.setPos(
       this.canvas.width / 2,
       this.canvas.height - this.radius
@@ -85,6 +84,7 @@ class GameView implements Controls {
 
   subscribeWindowEvents(): void {
     window.addEventListener("resize", this.resizeCanvas.bind(this));
+    window.addEventListener("orientationchange", this.resizeCanvas.bind(this));
   }
 
   resetShooter(): void {
@@ -105,18 +105,15 @@ class GameView implements Controls {
     const navbarRect = navbar.getBoundingClientRect();
     const gameControlsRect = gameControls.getBoundingClientRect();
     const canvasRect = this.canvas.getBoundingClientRect();
+    const bodyRect = document.body.getBoundingClientRect();
 
     // set canvas with and height dynamically
     this.canvas.width = canvasRect.width;
     this.canvas.height = Math.min(
       canvasRect.height,
-      window.innerHeight - (navbarRect.height + gameControlsRect.height)
+      bodyRect.height - (navbarRect.height + gameControlsRect.height)
     );
 
-    // this.canvas.height =
-    //   window.innerHeight - (navbarRect.height + gameControlsRect.height);
-
-    // Define min and max radius based on canvas dimensions
     const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.03; // 3% of the smaller dimension
 
     let r = minRadius;
@@ -196,7 +193,6 @@ class GameView implements Controls {
   }
 
   addShadow(): void {
-    // Apply shadow
     this.ctx.shadowBlur = 10;
     this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
     this.ctx.shadowOffsetX = 3;
@@ -278,18 +274,6 @@ class GameView implements Controls {
 
   getRandColor(): string {
     return this.colors[Math.floor(Math.random() * this.colors.length)];
-  }
-
-  handleMouseMove(e: MouseEvent): void {
-    const rect = this.canvas.getBoundingClientRect();
-    this.mousePosX = e.clientX - rect.left;
-    this.mousePosY = e.clientY - rect.top;
-  }
-
-  handleTouchMove(e: TouchEvent): void {
-    const rect = this.canvas.getBoundingClientRect();
-    this.mousePosX = e.touches[0].clientX - rect.left;
-    this.mousePosY = e.touches[0].clientY - rect.top;
   }
 }
 
