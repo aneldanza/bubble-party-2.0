@@ -23,6 +23,9 @@ class SoundManager {
     if (this.isMuted) return;
     this.sounds.theme.main.pause();
     const gameOverSection = this.sounds.gameOver;
+    for (const key in gameOverSection) {
+      gameOverSection[key].volume = 0.1;
+    }
     gameOverSection.uhOh.play();
     gameOverSection.uhOh.onended = () => gameOverSection.lose.play();
   }
@@ -40,7 +43,7 @@ class SoundManager {
   playTheme(): void {
     if (this.isMuted) return;
     this.sounds.theme.main.loop = true;
-    this.sounds.theme.main.volume = 0.3;
+    this.sounds.theme.main.volume = 0.05;
     this.sounds.theme.main.play();
   }
 
