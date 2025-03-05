@@ -105,12 +105,13 @@ class GameView implements Controls {
     const navbarRect = navbar.getBoundingClientRect();
     const gameControlsRect = gameControls.getBoundingClientRect();
     const canvasRect = this.canvas.getBoundingClientRect();
+    const bodyRect = document.body.getBoundingClientRect();
 
     // set canvas with and height dynamically
     this.canvas.width = canvasRect.width;
     this.canvas.height = Math.min(
       canvasRect.height,
-      window.innerHeight - (navbarRect.height + gameControlsRect.height)
+      bodyRect.height - (navbarRect.height + gameControlsRect.height)
     );
 
     const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.03; // 3% of the smaller dimension
