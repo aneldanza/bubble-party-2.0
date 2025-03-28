@@ -51,16 +51,21 @@ class GameView implements Controls {
   init(shooter: Shooter): void {
     this.shooter = shooter;
     this.resizeCanvas();
+    this.setInitialPositions();
+
+    this.calculateMaxRowsAndCols();
+  }
+
+  setInitialPositions(): void {
     this.shooter.setPos(
       this.canvas.width / 2,
-      this.canvas.height - this.radius
+      this.canvas.height - this.radius - this.bubbleMargin
     );
 
     this.nextBubble.setPos(
       this.canvas.width / 5,
-      this.canvas.height - this.radius
+      this.canvas.height - this.radius - this.bubbleMargin
     );
-    this.calculateMaxRowsAndCols();
   }
 
   calculateMaxRowsAndCols(): void {
@@ -80,6 +85,7 @@ class GameView implements Controls {
   resizeCanvas(): void {
     this.setBubbleRadius();
     this.calculateMaxRowsAndCols();
+    this.setInitialPositions();
   }
 
   subscribeWindowEvents(): void {
@@ -90,7 +96,7 @@ class GameView implements Controls {
   resetShooter(): void {
     this.shooter.reset(
       this.canvas.width / 2,
-      this.canvas.height - this.radius,
+      this.canvas.height - this.radius - this.bubbleMargin,
       this.nextBubble.color
     );
 
