@@ -13,7 +13,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bubble Party</title>
   </head>
-  <body class="overflow-hidden h-dvh relative">
+  <body
+    class="overflow-hidden h-dvh relative bg-gradient-to-b from-blue-200 via-teal-200 to-yellow-100"
+  >
     <!-- Main Screen  -->
     <div
       id="app"
@@ -186,26 +188,40 @@
     </div>
 
     <!-- Background Screen -->
-    <div
-      id="background"
-      class="screen z-5 hidden md:block bg-gradient-to-b from-blue-200 via-teal-200 to-yellow-100"
-    >
+    <div id="background" class="screen z-5">
       <img
         src="/public/fish-with-bubbles.svg"
-        class="left-0 bottom-0 w-1/6 lg:w-1/5 lg:left-0 absolute"
+        class="left-0 bottom-0 w-1/6 lg:w-1/6 lg:left-0 absolute"
       />
 
       <img
         id="floating-fish"
         src="/public/fish.svg"
-        class="absolute top-1/4 left-0 w-28"
+        class="absolute top-1/4 left-0 w-28 animate-fade-in hidden md:block"
       />
 
-      <div
-        class="right-0 bottom-0 w-1/4 lg:w-1/4 h-full lg:bottom-0 lg:right-0 absolute flex justify-between items-end"
-      >
-        <img src="/public/seaweed-purple.svg" alt="background" class="" />
-        <img src="/public/seaweed-green.svg" alt="background" class="" />
+      <img
+        id="school-of-fish"
+        src="/public/school-of-fish.svg"
+        class="absolute right-0 bottom-0 w-28 lg:w-28 animate-fade-in hidden md:block"
+      />
+      <div id="bubble-cluster-container" class="hidden md:block"></div>
+
+      <div class="absolute right-0 bottom-0 w-1/4 lg:w-1/4 h-full">
+        <div
+          class="w-full h-full flex justify-between items-end justify-self-end"
+        >
+          <img
+            src="/public/seaweed-purple.svg"
+            alt="background"
+            class="shrink w-1/2 animate-sway"
+          />
+          <img
+            src="/public/seaweed-green.svg"
+            alt="background"
+            class="shrink w-1/2 animate-sway"
+          />
+        </div>
       </div>
     </div>
 

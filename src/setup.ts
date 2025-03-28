@@ -1,5 +1,6 @@
 import Game from "./game";
 import { PlayMode } from "./types";
+import { setUpAnimations } from "./background-animations";
 
 export function setupStartScreen(game: Game): void {
   const setupScreenContainer = document.getElementById(
@@ -13,6 +14,7 @@ export function setupStartScreen(game: Game): void {
   startButton.addEventListener("click", () => {
     setupScreenContainer.style.visibility = "hidden";
     game.start();
+    setUpAnimations();
   });
 
   for (let i = 0; i < playModeButtons.length; i++) {

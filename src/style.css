@@ -54,12 +54,35 @@
     }
   }
 
+  @keyframes sway {
+    0% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(2deg);
+    }
+    50% {
+      transform: rotate(0deg);
+    }
+    75% {
+      transform: rotate(-2deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  .animate-sway {
+    animation: sway 10s ease-in-out infinite; /* 3-second infinite swaying animation */
+    transform-origin: bottom center; /* Anchor the rotation at the bottom center */
+  }
+
   .animate-fade-in {
     animation: fade-in 1s ease-in-out;
   }
 
   .bubble-float {
-    animation: float-up 5s linear infinite;
+    animation: float-up 10s linear infinite;
   }
   .animate-float {
     animation: float-left-to-right 10s linear infinite;
@@ -68,7 +91,15 @@
     animation: pulse-scale 3.5s infinite ease-in-out;
   }
   .bubble {
-    animation: float 8s infinite ease-in-out;
+    @apply rounded-full bg-gradient-to-r;
+    opacity: 0.3; /* Slightly transparent */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2),
+      inset 0 -2px 4px rgba(255, 255, 255, 0.5); /* 3D effect */
+    animation: float-up 10s linear infinite;
+  }
+
+  .bubble-cluster {
+    @apply flex gap-2 absolute bottom-0 w-[400px] h-[300px];
   }
 }
 
