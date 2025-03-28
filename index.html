@@ -14,9 +14,10 @@
     <title>Bubble Party</title>
   </head>
   <body class="overflow-hidden h-dvh relative">
+    <!-- Main Screen  -->
     <div
       id="app"
-      class="h-full w-screen overflow-hidden max-h-dvh flex flex-col bg-gradient-to-b from-blue-200 via-teal-200 to-yellow-100 justify-center"
+      class="h-full w-screen overflow-hidden max-h-dvh flex flex-col justify-center z-10 relative"
     >
       <nav
         id="navbar"
@@ -77,119 +78,137 @@
         </div>
       </nav>
       <footer></footer>
+    </div>
 
-      <!-- Resume Screen  -->
+    <!-- Resume Screen  -->
 
-      <div id="resume-screen" class="screen hidden">
-        <div
-          class="h-full w-screen flex flex-col gap-20 items-center justify-center bg-gradient-to-r from-pink-100 via-blue-200 to-pink-100 text-white"
+    <div id="resume-screen" class="screen hidden z-20">
+      <div
+        class="h-full w-screen flex flex-col gap-20 items-center justify-center bg-gradient-to-r from-pink-100 via-blue-200 to-pink-100 text-white"
+      >
+        <span class="game-over-message">PAUSED</span>
+        <button
+          id="resume-game"
+          class="settings-btn toggle-pause animate-pulse-scale"
         >
-          <span class="game-over-message">PAUSED</span>
-          <button
-            id="resume-game"
-            class="settings-btn toggle-pause animate-pulse-scale"
-          >
-            Tap to Resume
-          </button>
-          <button id="go-to-start-resume" class="settings-btn">
-            Main Menu
-          </button>
-        </div>
+          Tap to Resume
+        </button>
+        <button id="go-to-start-resume" class="settings-btn">Main Menu</button>
       </div>
+    </div>
 
-      <!-- Start Screen  -->
-      <div id="setup-screen-container" class="screen">
+    <!-- Start Screen  -->
+    <div id="setup-screen-container" class="screen z-20">
+      <div
+        class="flex flex-col items-center justify-center bg-blue-200 text-pink-300 gap-20 p-4 h-full"
+      >
         <div
-          class="flex flex-col items-center justify-center bg-blue-200 text-pink-300 gap-20 p-4 h-full"
+          class="logo text-5xl md:text-6xl tracking-wide flex shrink justify-center"
         >
-          <div
-            class="logo text-5xl md:text-6xl tracking-wide flex shrink justify-center"
-          >
-            Bubble Party
+          Bubble Party
+        </div>
+        <nav class="flex flex-col gap-4 items-center text-sm">
+          <div class="flex items-center relative">
+            <div id="relaxed-mode-svg" class="mode-svg" data-mode="relaxed">
+              <img src="/star.svg" alt="star" class="size-6" />
+            </div>
+            <div id="relaxed" class="play-mode">Relaxed Mode</div>
           </div>
-          <nav class="flex flex-col gap-4 items-center text-sm">
-            <div class="flex items-center relative">
-              <div id="relaxed-mode-svg" class="mode-svg" data-mode="relaxed">
-                <img src="/star.svg" alt="star" class="size-6" />
-              </div>
-              <div id="relaxed" class="play-mode">Relaxed Mode</div>
-            </div>
 
-            <div class="flex items-center relative">
-              <div id="time-limit-svg" class="mode-svg" data-mode="time-limit">
-                <img src="/star.svg" alt="star" class="size-6" />
-              </div>
-              <div id="time-limit" class="play-mode">Time Limit</div>
+          <div class="flex items-center relative">
+            <div id="time-limit-svg" class="mode-svg" data-mode="time-limit">
+              <img src="/star.svg" alt="star" class="size-6" />
             </div>
+            <div id="time-limit" class="play-mode">Time Limit</div>
+          </div>
+        </nav>
+        <button id="start-game" class="settings-btn animate-pulse-scale">
+          Start
+        </button>
+        <div>
+          <nav class="flex gap-4 items-center text-sm">
+            <a
+              href="https://www.linkedin.com/in/anel-danza-a9591868/"
+              target="_blank"
+            >
+              <img src="/linkedin.svg" alt="LinkedIn" width="24" height="24" />
+            </a>
+
+            <a href="https://github.com/aneldanza" target="_blank">
+              <img src="/github.svg" alt="GitHub" width="24" height="24" />
+            </a>
+            <a
+              href="https://personal-portfolio-aneldanzas-projects.vercel.app/"
+              target="_blank"
+            >
+              <img
+                class="icon"
+                src="/portfolio-icon.svg"
+                alt="portfolio"
+                width="24"
+                height="24"
+              />
+            </a>
           </nav>
-          <button id="start-game" class="settings-btn animate-pulse-scale">
-            Start
-          </button>
-          <div>
-            <nav class="flex gap-4 items-center text-sm">
-              <a
-                href="https://www.linkedin.com/in/anel-danza-a9591868/"
-                target="_blank"
-              >
-                <img
-                  src="/linkedin.svg"
-                  alt="LinkedIn"
-                  width="24"
-                  height="24"
-                />
-              </a>
-
-              <a href="https://github.com/aneldanza" target="_blank">
-                <img src="/github.svg" alt="GitHub" width="24" height="24" />
-              </a>
-              <a
-                href="https://personal-portfolio-aneldanzas-projects.vercel.app/"
-                target="_blank"
-              >
-                <img
-                  class="icon"
-                  src="/portfolio-icon.svg"
-                  alt="portfolio"
-                  width="24"
-                  height="24"
-                />
-              </a>
-            </nav>
-          </div>
-        </div>
-      </div>
-
-      <!-- Game Over Screen  -->
-      <div id="game-over" class="screen hidden">
-        <div
-          id=""
-          class="h-full w-screen flex flex-col gap-20 items-center justify-center bg-gradient-to-r from-pink-100 via-blue-200 to-pink-100 text-white"
-        >
-          <span class="game-over-message">GAME OVER</span>
-
-          <div class="flex flex-col gap-4 items-center">
-            <div class="score">
-              <span>Highest Score</span>
-              <span id="highest-score"></span>
-            </div>
-            <div class="score">
-              <span>Your Score</span>
-              <span class="score-value">0</span>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-6 items-center">
-            <button id="play-again" class="settings-btn hidden">
-              Play Again
-            </button>
-
-            <button id="go-to-start" class="settings-btn hidden">
-              Go to Main Screen
-            </button>
-          </div>
         </div>
       </div>
     </div>
+
+    <!-- Game Over Screen  -->
+    <div id="game-over" class="screen hidden z-20">
+      <div
+        id=""
+        class="h-full w-screen flex flex-col gap-20 items-center justify-center bg-gradient-to-r from-pink-100 via-blue-200 to-pink-100 text-white"
+      >
+        <span class="game-over-message">GAME OVER</span>
+
+        <div class="flex flex-col gap-4 items-center">
+          <div class="score">
+            <span>Highest Score</span>
+            <span id="highest-score"></span>
+          </div>
+          <div class="score">
+            <span>Your Score</span>
+            <span class="score-value">0</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-6 items-center">
+          <button id="play-again" class="settings-btn hidden">
+            Play Again
+          </button>
+
+          <button id="go-to-start" class="settings-btn hidden">
+            Go to Main Screen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Background Screen -->
+    <div
+      id="background"
+      class="screen z-5 hidden md:block bg-gradient-to-b from-blue-200 via-teal-200 to-yellow-100"
+    >
+      <img
+        src="/public/fish-with-bubbles.svg"
+        class="left-0 bottom-0 w-1/6 lg:w-1/5 lg:left-0 absolute"
+      />
+
+      <img
+        id="floating-fish"
+        src="/public/fish.svg"
+        class="absolute top-1/4 left-0 w-28"
+      />
+
+      <div
+        class="right-0 bottom-0 w-1/4 lg:w-1/4 h-full lg:bottom-0 lg:right-0 absolute flex justify-between items-end"
+      >
+        <img src="/public/seaweed-purple.svg" alt="background" class="" />
+        <img src="/public/seaweed-green.svg" alt="background" class="" />
+      </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
