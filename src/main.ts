@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const game = new Game(canvas, ctx, COLORS, soundManager);
 
   setupStartScreen(game);
-  setupGameOverScreen(game, highestScoreManager, soundManager);
+  setupGameOverScreen(game, highestScoreManager);
 
   const scoreElements = document.getElementsByClassName("score-value");
   const toggleMuteButton = document.getElementById("toggle-mute")!;
