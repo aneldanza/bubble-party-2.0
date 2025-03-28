@@ -5,6 +5,7 @@ import SoundManager from "./sound-manager";
 import HighestScoreManager from "./highest-score-manager";
 import { setupGameOverScreen } from "./game-over";
 import { setupStartScreen } from "./setup";
+// import { setUpAnimations } from "./background-animations";
 
 // check if page is loaded
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,7 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const game = new Game(canvas, ctx, COLORS, soundManager);
 
   setupStartScreen(game);
-  setupGameOverScreen(game, highestScoreManager, soundManager);
+  setupGameOverScreen(game, highestScoreManager);
+  // setUpAnimations();
 
   const scoreElements = document.getElementsByClassName("score-value");
   const toggleMuteButton = document.getElementById("toggle-mute")!;
