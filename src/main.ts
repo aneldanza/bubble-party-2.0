@@ -20,7 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreElements = document.getElementsByClassName("score-value");
   const toggleMuteButton = document.getElementById("toggle-mute")!;
   const quitButton = document.getElementById("quit")!;
-  const pauseButton = document.getElementById("toggle-pause")!;
+  const pauseButtonsCollection =
+    document.getElementsByClassName("toggle-pause")!;
+  const pauseButton = document.getElementById("pause-game")!;
+  const resumeScreen = document.getElementById("resume-screen")!;
 
   game.score.subscribe((value) => {
     for (let i = 0; i < scoreElements.length; i++) {
@@ -29,9 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   game.isPaused.subscribe((value) => {
-    value
-      ? (pauseButton.textContent = "Resume")
-      : (pauseButton.textContent = "Pause");
+    if (value) {
+      pauseButton.textContent = "Resume";
+      resumeScreen.style.display = "flex";
+    } else {
+      pauseButton.textContent = "Pause";
+      resumeScreen.style.display = "none";
+    }
   });
 
   toggleMuteButton.addEventListener("click", (e: MouseEvent) => {
@@ -45,7 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
     game.view.isOver.value = true;
   });
 
-  pauseButton.addEventListener("click", () => {
-    game.isPaused.value = !game.isPaused.value;
+  for (let i = 0; i < pauseButtonsCollection.length; i++) {
+    const button = pauseButtonsCollection[i] as HTMLButtonElement;
+    button.addEventListener("click", () => {
+      game.isPaused.value = !game.isPaused.value;
+    });
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      game.isPaused.value = true;
+    }
   });
 });

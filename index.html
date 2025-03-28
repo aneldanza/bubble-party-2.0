@@ -25,9 +25,16 @@
         <div class="logo hidden md:block md:text-2xl lg:text-4xl">
           Bubble Party
         </div>
-        <div class="btn action-btn md:place-self-center text-2xl" id="score">
+        <!-- <div class="btn action-btn md:place-self-center text-2xl" id="score">
           <span>Score:</span>
           <span class="score-value">0</span>
+        </div> -->
+
+        <div
+          class="font-logo text-yellow-700 text-lg lg:text-xl bg-yellow-400/90 px-4 py-1 lg:px-6 lg:py-2 rounded-full shadow-lg hover:scale-105 transition-transform justify-self-start md:justify-self-center align-self-center inline-flex items-center gap-2"
+        >
+          <span class="font-bold">Score:</span>
+          <span class="score-value text-2xl">0</span>
         </div>
         <nav class="flex gap-4 items-center text-sm justify-self-end">
           <a
@@ -77,19 +84,44 @@
         </nav>
       </nav>
       <main id="game-container" class="flex-grow relative">
-        <canvas
-          id="game-canvas"
-          class="w-full h-full max-w-[700px] flex shadow-gray-400 rounded shadow m-auto"
-        ></canvas>
+        <div
+          class="w-fit m-auto h-full shadow-2xl shadow-black/5 rounded-xl ring-4 ring-black/5 backdrop-blur-md bg-white/10 justify-self-center flex items-center"
+        >
+          <canvas
+            id="game-canvas"
+            class="w-full h-full max-w-[700px] flex m-auto rounded-xl bg-white/10 backdrop-blur-md"
+          ></canvas>
+        </div>
       </main>
       <nav id="game-controls" class="h-16 lg:h-24 py-4">
         <div class="flex justify-center items-center gap-4">
-          <button class="btn action-btn" id="toggle-pause">Pause</button>
+          <button class="btn action-btn toggle-pause" id="pause-game">
+            Pause
+          </button>
           <button class="btn action-btn" id="quit">Quit</button>
           <button class="btn action-btn" id="toggle-mute">Mute</button>
         </div>
       </nav>
       <footer></footer>
+
+      <!-- Resume Screen  -->
+
+      <div id="resume-screen" class="screen hidden">
+        <div
+          class="h-full w-screen flex flex-col gap-20 items-center justify-center bg-gradient-to-r from-pink-100 via-blue-200 to-pink-100 text-white"
+        >
+          <span class="game-over-message">PAUSED</span>
+          <button
+            id="resume-game"
+            class="settings-btn toggle-pause animate-pulse-scale"
+          >
+            Tap to Resume
+          </button>
+          <button id="go-to-start-resume" class="settings-btn">
+            Main Menu
+          </button>
+        </div>
+      </div>
 
       <!-- Start Screen  -->
       <div id="setup-screen-container" class="screen">
@@ -136,7 +168,9 @@
               <div id="time-limit" class="play-mode">Time Limit</div>
             </div>
           </nav>
-          <button id="start-game" class="settings-btn">Start</button>
+          <button id="start-game" class="settings-btn animate-pulse-scale">
+            Start
+          </button>
           <div>
             <nav class="flex gap-4 items-center text-sm">
               <a
