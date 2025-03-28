@@ -27,7 +27,7 @@ class SoundManager {
       gameOverSection[key].volume = 0.1;
     }
     gameOverSection.uhOh.play();
-    gameOverSection.uhOh.onended = () => gameOverSection.lose.play();
+    // gameOverSection.uhOh.onended = () => gameOverSection.lose.play();
   }
 
   bubbleBurst(numOfBubbles: number): void {
