@@ -69,7 +69,7 @@ class Game {
     } else {
       this.userInputManager.subscribeUserEvents();
     }
-    this.soundManager.pauseGameSounds(this.isPaused.value);
+    // this.soundManager.pauseGameSounds(this.isPaused.value);
   }
 
   setPlayMode(mode: PlayMode): void {
