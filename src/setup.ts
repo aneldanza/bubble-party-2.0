@@ -1,8 +1,11 @@
+import BackgroundAnimations from "./background-animations";
 import Game from "./game";
 import { PlayMode } from "./types";
-import { setUpAnimations } from "./background-animations";
 
-export function setupStartScreen(game: Game): void {
+export function setupStartScreen(
+  game: Game,
+  animations: BackgroundAnimations
+): void {
   const setupScreenContainer = document.getElementById(
     "setup-screen-container"
   )!;
@@ -14,7 +17,8 @@ export function setupStartScreen(game: Game): void {
   startButton.addEventListener("click", () => {
     setupScreenContainer.style.visibility = "hidden";
     game.start();
-    setUpAnimations();
+    animations.stopBubbleClusters();
+    // animations.startFishAnimation();
   });
 
   for (let i = 0; i < playModeButtons.length; i++) {
@@ -42,4 +46,5 @@ export function setupStartScreen(game: Game): void {
   });
 
   updateSelectedButton();
+  animations.startBubbleClusters();
 }
