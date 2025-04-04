@@ -71,12 +71,36 @@
         </div>
       </main>
       <nav id="game-controls" class="h-16 lg:h-24 py-4">
-        <div class="flex justify-center items-center gap-4">
-          <button class="btn action-btn toggle-pause" id="pause-game">
-            Pause
-          </button>
-          <button class="btn action-btn" id="quit">Quit</button>
-          <button class="btn action-btn" id="toggle-mute">Mute</button>
+        <div class="flex justify-center items-center gap-6 md:gap-8 lg:gap-12">
+          <div class="relative group">
+            <img
+              src="/pause-circle.svg"
+              id="pause-game"
+              alt="Pause"
+              class="game-control-icon toggle-pause"
+            />
+            <span class="tooltip">Pause</span>
+          </div>
+
+          <div class="relative group">
+            <img
+              src="/close.svg"
+              id="quit"
+              alt="Close"
+              class="game-control-icon"
+            />
+            <span class="tooltip">Quit</span>
+          </div>
+
+          <div class="relative group">
+            <img
+              src="/volume-loud.svg"
+              id="toggle-mute"
+              alt="Mute"
+              class="game-control-icon"
+            />
+            <span id="mute-tooltip" class="tooltip">Mute</span>
+          </div>
         </div>
       </nav>
       <footer></footer>
@@ -112,14 +136,14 @@
         <nav class="flex flex-col gap-4 items-center text-sm">
           <div class="flex items-center relative">
             <div id="relaxed-mode-svg" class="mode-svg" data-mode="relaxed">
-              <img src="/star.svg" alt="star" class="size-6" />
+              <img src="/starfish.svg" alt="star" class="size-6" />
             </div>
             <div id="relaxed" class="play-mode">Relaxed Mode</div>
           </div>
 
           <div class="flex items-center relative">
             <div id="time-limit-svg" class="mode-svg" data-mode="time-limit">
-              <img src="/star.svg" alt="star" class="size-6" />
+              <img src="/starfish.svg" alt="star" class="size-6" />
             </div>
             <div id="time-limit" class="play-mode">Time Limit</div>
           </div>
@@ -154,6 +178,7 @@
           </nav>
         </div>
       </div>
+      <div id="bubble-cluster-container" class=""></div>
     </div>
 
     <!-- Game Over Screen  -->
@@ -190,37 +215,34 @@
     <!-- Background Screen -->
     <div id="background" class="screen z-5">
       <img
-        src="/public/fish-with-bubbles.svg"
-        class="left-0 bottom-0 w-1/6 lg:w-1/6 lg:left-0 absolute"
+        src="/fish-with-bubbles.svg"
+        class="left-0 bottom-0 w-1/6 lg:w-1/6 lg:left-0 absolute hidden md:block"
       />
 
       <img
         id="floating-fish"
-        src="/public/fish.svg"
+        src="/fish.svg"
         class="absolute top-1/4 left-0 w-28 animate-fade-in hidden md:block"
       />
 
       <img
         id="school-of-fish"
-        src="/public/school-of-fish.svg"
+        src="/school-of-fish.svg"
         class="absolute right-0 bottom-0 w-28 lg:w-28 animate-fade-in hidden md:block"
       />
-      <div id="bubble-cluster-container" class="hidden md:block"></div>
 
-      <div class="absolute right-0 bottom-0 w-1/4 lg:w-1/4 h-full">
+      <div
+        class="absolute right-0 bottom-0 w-1/4 lg:w-1/4 h-full hidden md:block"
+      >
         <div
           class="w-full h-full flex justify-between items-end justify-self-end"
         >
           <img
-            src="/public/seaweed-purple.svg"
+            src="/seaweed-purple.svg"
             alt="background"
-            class="shrink w-1/2 animate-sway"
+            class="shrink w-1/2"
           />
-          <img
-            src="/public/seaweed-green.svg"
-            alt="background"
-            class="shrink w-1/2 animate-sway"
-          />
+          <img src="/seaweed-green.svg" alt="background" class="shrink w-1/2" />
         </div>
       </div>
     </div>

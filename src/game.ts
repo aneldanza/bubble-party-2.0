@@ -49,7 +49,7 @@ class Game {
     this.animate();
     this.bubbleManager.addRow();
     this.userInputManager.subscribeUserEvents();
-    this.soundManager.playTheme();
+    // this.soundManager.playTheme();
     if (this.playMode.value == "time-limit") {
       this.bubbleManager.fillBubbles();
     }
@@ -69,7 +69,7 @@ class Game {
     } else {
       this.userInputManager.subscribeUserEvents();
     }
-    this.soundManager.pauseGameSounds(this.isPaused.value);
+    // this.soundManager.pauseGameSounds(this.isPaused.value);
   }
 
   setPlayMode(mode: PlayMode): void {

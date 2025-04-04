@@ -155,4 +155,19 @@
   .screen {
     @apply absolute top-0 left-0 w-full h-full;
   }
+
+  .game-control-icon {
+    @apply w-10 h-10 lg:w-12 lg:h-12 cursor-pointer hover:transform;
+    @apply border-2 rounded-full p-1 lg:p-2 bg-yellow-400 border-amber-500 hover:bg-yellow-500 hover:border-amber-600 text-white shadow-lg;
+    @apply transform hover:scale-105 transition duration-300 ease-in-out;
+  }
+
+  .tooltip {
+    @apply absolute bg-gray-800  left-3/4 text-white text-xs rounded-lg p-1;
+    @apply transition-opacity duration-300 ease-in-out;
+    @apply opacity-0 pointer-events-none;
+    @apply transform translate-y-2;
+    @apply group-hover:opacity-40 group-hover:translate-y-1;
+    bottom: -1rem;
+  }
 }

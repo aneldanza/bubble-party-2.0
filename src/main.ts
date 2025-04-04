@@ -5,7 +5,7 @@ import SoundManager from "./sound-manager";
 import HighestScoreManager from "./highest-score-manager";
 import { setupGameOverScreen } from "./game-over";
 import { setupStartScreen } from "./setup";
-// import { setUpAnimations } from "./background-animations";
+import BackgroundAnimations from "./background-animations";
 
 // check if page is loaded
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,17 +14,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const soundManager = new SoundManager(SOUNDS);
   const highestScoreManager = new HighestScoreManager();
   const game = new Game(canvas, ctx, COLORS, soundManager);
+  const animations = new BackgroundAnimations();
 
-  setupStartScreen(game);
+  setupStartScreen(game, animations);
   setupGameOverScreen(game, highestScoreManager);
-  // setUpAnimations();
 
   const scoreElements = document.getElementsByClassName("score-value");
   const toggleMuteButton = document.getElementById("toggle-mute")!;
+  const muteToolTip = document.getElementById("mute-tooltip")!;
   const quitButton = document.getElementById("quit")!;
   const pauseButtonsCollection =
     document.getElementsByClassName("toggle-pause")!;
-  const pauseButton = document.getElementById("pause-game")!;
   const resumeScreen = document.getElementById("resume-screen")!;
 
   game.score.subscribe((value) => {
@@ -35,10 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   game.isPaused.subscribe((value) => {
     if (value) {
-      pauseButton.textContent = "Resume";
       resumeScreen.style.display = "flex";
     } else {
-      pauseButton.textContent = "Pause";
       resumeScreen.style.display = "none";
     }
   });
@@ -46,8 +44,18 @@ document.addEventListener("DOMContentLoaded", () => {
   toggleMuteButton.addEventListener("click", (e: MouseEvent) => {
     soundManager.toggleMuteAll();
 
-    const button = e.target as HTMLButtonElement;
-    button.textContent = soundManager.isMuted ? "Unmute" : "Mute";
+    const element = e.target;
+    if (element instanceof HTMLImageElement) {
+      if (soundManager.isMuted) {
+        element.src = "/volume-mute.svg";
+        muteToolTip.textContent = "Unmute";
+      } else {
+        element.src = "/volume-loud.svg";
+        muteToolTip.textContent = "Mute";
+      }
+    } else {
+      console.error("Element is not an HTMLImageElement or HTMLButtonElement");
+    }
   });
 
   quitButton.addEventListener("click", () => {
