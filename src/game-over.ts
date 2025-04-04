@@ -9,13 +9,7 @@ export function setupGameOverScreen(
   const restartButton = document.getElementById(
     "play-again"
   ) as HTMLButtonElement;
-  const goToStartButton = document.getElementById(
-    "go-to-start"
-  ) as HTMLButtonElement;
   const highestScoreElement = document.getElementById("highest-score")!;
-  const startScreenContainer = document.getElementById(
-    "setup-screen-container"
-  );
 
   restartButton.addEventListener("click", () => {
     gameOverElement.style.display = "none";
@@ -36,15 +30,6 @@ export function setupGameOverScreen(
         : "0";
     } else {
       gameOverElement.style.display = "none";
-    }
-  });
-
-  goToStartButton.addEventListener("click", () => {
-    game.reset();
-    if (startScreenContainer) {
-      startScreenContainer.style.visibility = "visible";
-    } else {
-      // setupStartScreen(game);
     }
   });
 }

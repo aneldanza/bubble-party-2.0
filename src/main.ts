@@ -26,6 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const pauseButtonsCollection =
     document.getElementsByClassName("toggle-pause")!;
   const resumeScreen = document.getElementById("resume-screen")!;
+  const goToStartButtonCollection =
+    document.getElementsByClassName("go-to-start")!;
+
+  for (let i = 0; i < goToStartButtonCollection.length; i++) {
+    const button = goToStartButtonCollection[i];
+
+    button.addEventListener("click", () => {
+      game.reset();
+      const startScreenContainer = document.getElementById(
+        "setup-screen-container"
+      );
+      if (startScreenContainer) {
+        startScreenContainer.style.visibility = "visible";
+      }
+    });
+  }
 
   game.score.subscribe((value) => {
     for (let i = 0; i < scoreElements.length; i++) {
