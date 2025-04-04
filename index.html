@@ -71,12 +71,36 @@
         </div>
       </main>
       <nav id="game-controls" class="h-16 lg:h-24 py-4">
-        <div class="flex justify-center items-center gap-4">
-          <button class="btn action-btn toggle-pause" id="pause-game">
-            Pause
-          </button>
-          <button class="btn action-btn" id="quit">Quit</button>
-          <button class="btn action-btn" id="toggle-mute">Mute</button>
+        <div class="flex justify-center items-center gap-6 md:gap-8 lg:gap-12">
+          <div class="relative group">
+            <img
+              src="/pause-circle.svg"
+              id="pause-game"
+              alt="Pause"
+              class="game-control-icon toggle-pause"
+            />
+            <span class="tooltip">Pause</span>
+          </div>
+
+          <div class="relative group">
+            <img
+              src="/close.svg"
+              id="quit"
+              alt="Close"
+              class="game-control-icon"
+            />
+            <span class="tooltip">Quit</span>
+          </div>
+
+          <div class="relative group">
+            <img
+              src="/volume-loud.svg"
+              id="toggle-mute"
+              alt="Mute"
+              class="game-control-icon"
+            />
+            <span id="mute-tooltip" class="tooltip">Mute</span>
+          </div>
         </div>
       </nav>
       <footer></footer>
