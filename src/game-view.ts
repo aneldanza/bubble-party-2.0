@@ -42,9 +42,6 @@ class GameView implements Controls {
 
     this.setBubbleRadius();
 
-    // this.handleMouseMoveRef = this.handleMouseMove.bind(this);
-    // this.handleTouchMoveRef = this.handleTouchMove.bind(this);
-
     this.subscribeWindowEvents();
   }
 
@@ -120,7 +117,12 @@ class GameView implements Controls {
       bodyRect.height - (navbarRect.height + gameControlsRect.height)
     );
 
-    const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.03; // 3% of the smaller dimension
+    // Dynamically adjust minRadius based on screen size
+    const isMobile = window.innerWidth <= 768; // Define a mobile breakpoint
+    const baseRadius = Math.min(this.canvas.width, this.canvas.height) * 0.03; // 3% of the smaller dimension
+    const minRadius = isMobile ? baseRadius * 1.2 : baseRadius; // Increase radius by 20% on mobile
+
+    // const minRadius = Math.min(this.canvas.width, this.canvas.height) * 0.03; // 3% of the smaller dimension
 
     let r = minRadius;
     let bestRadius = r;
