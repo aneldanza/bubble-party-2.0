@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupStartScreen(game, animations);
   setupGameOverScreen(game, highestScoreManager);
-  // setUpAnimations();
 
   const scoreElements = document.getElementsByClassName("score-value");
   const toggleMuteButton = document.getElementById("toggle-mute")!;
@@ -26,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const quitButton = document.getElementById("quit")!;
   const pauseButtonsCollection =
     document.getElementsByClassName("toggle-pause")!;
-  // const pauseButton = document.getElementById("pause-game")!;
   const resumeScreen = document.getElementById("resume-screen")!;
 
   game.score.subscribe((value) => {
@@ -37,10 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   game.isPaused.subscribe((value) => {
     if (value) {
-      // pauseButton.textContent = "Resume";
       resumeScreen.style.display = "flex";
     } else {
-      // pauseButton.textContent = "Pause";
       resumeScreen.style.display = "none";
     }
   });

@@ -18,7 +18,6 @@ export function setupStartScreen(
     setupScreenContainer.style.visibility = "hidden";
     game.start();
     animations.stopBubbleClusters();
-    // animations.startFishAnimation();
   });
 
   for (let i = 0; i < playModeButtons.length; i++) {
