@@ -178,6 +178,8 @@ class GameView implements Controls {
       b = parseInt(hex[5] + hex[6], 16);
     }
 
+    alpha = Math.max(0, Math.min(1, alpha));
+
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
@@ -216,8 +218,48 @@ class GameView implements Controls {
       this.addGradient(bubble, this.radius);
 
       this.addShadow();
+    } else if (bubble.status === "burst") {
+      this.burstBubble(bubble);
     }
     this.ctx.fill();
+  }
+
+  burstBubble(bubble: Bubble): void {
+    // Save the current canvas state
+    this.ctx.save();
+
+    // Create a shrinking effect by reducing the radius over time
+    const shrinkFactor = 0.9; // Shrink by 10% each frame
+    const minRadius = this.radius * 0.1; // Minimum radius before disappearing
+    let bubbleRadius = this.radius;
+
+    // Reduce the radius
+    bubbleRadius *= shrinkFactor;
+
+    // If the radius is too small, set the bubble status to "transparent"
+    if (bubbleRadius <= minRadius) {
+      bubble.status = "inactive";
+      return;
+    }
+
+    // Draw the shrinking bubble
+    this.ctx.beginPath();
+    this.ctx.arc(bubble.x, bubble.y, bubbleRadius, 0, Math.PI * 2);
+
+    // add gradient with no color
+    bubble.color = "#99dbf0"; // Light blue with 50% opacity
+    this.addGradient(bubble, bubbleRadius);
+
+    //remove shadow
+    this.ctx.shadowBlur = 0;
+    this.ctx.shadowColor = "rgba(0, 0, 0, 0)";
+    this.ctx.shadowOffsetX = 0;
+    this.ctx.shadowOffsetY = 0;
+
+    this.ctx.fill();
+
+    // Restore the canvas state
+    this.ctx.restore();
   }
 
   drawNextBubblePreviewSection(): void {

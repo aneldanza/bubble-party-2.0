@@ -44,6 +44,10 @@ class Bubble {
     this.status = "inactive";
   }
 
+  burst(): void {
+    this.status = "burst";
+  }
+
   activate(color: string): void {
     this.color = color;
     this.status = "active";

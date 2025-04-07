@@ -9,6 +9,8 @@ class BubbleManager {
   private game: Game;
   private shooter: Shooter;
   public collisionManager: CollisionManager;
+  private static readonly BURST_ANIMATION_DURATION = 100;
+  private static readonly BURST_ANIMATION_DELAY = 50;
 
   constructor(
     game: Game,
@@ -83,13 +85,17 @@ class BubbleManager {
 
       if (cluster.length > 2) {
         const clusterLength = cluster.length;
-        this.dropBubbles(cluster);
+        // this.dropBubbles(cluster);
+        cluster.forEach((bubble) => {
+          bubble.status = "marked";
+        });
 
         const floatingBubbles = this.findFloatingBubbles();
 
         const bubblesToDropLength = clusterLength + floatingBubbles.length;
 
-        this.dropBubbles(floatingBubbles);
+        this.dropBubbles(cluster.concat(floatingBubbles));
+        // this.dropBubbles(floatingBubbles);
 
         this.game.score.value += bubblesToDropLength;
 
@@ -177,7 +183,8 @@ class BubbleManager {
           col < 0 ||
           !this.bubbles[row] ||
           !this.bubbles[row][col] ||
-          this.bubbles[row][col].status === "inactive"
+          this.bubbles[row][col].status === "inactive" ||
+          this.bubbles[row][col].status === "marked" // Exclude "marked" bubbles
         ) {
           return null;
         }
@@ -188,9 +195,26 @@ class BubbleManager {
   }
 
   dropBubbles(cluster: Bubble[]): void {
-    cluster.forEach((bubble) => {
-      this.bubbles[bubble.row][bubble.col].nullify();
+    if (!cluster || cluster.length === 0) {
+      return; // Validate the cluster
+    }
+
+    cluster.forEach((bubble, index) => {
+      this.burstAndNullifyBubble(
+        bubble,
+        index * BubbleManager.BURST_ANIMATION_DELAY
+      );
     });
+  }
+
+  private burstAndNullifyBubble(bubble: Bubble, delay: number): void {
+    setTimeout(() => {
+      bubble.burst();
+      setTimeout(
+        () => bubble.nullify(),
+        BubbleManager.BURST_ANIMATION_DURATION
+      );
+    }, delay);
   }
 
   findFloatingBubbles(): Bubble[] {
@@ -200,7 +224,7 @@ class BubbleManager {
     const queue: Bubble[] = [];
     const floatingBubbles: Bubble[] = [];
 
-    // initialize queue with all of the bubbles in the top row
+    // Initialize queue with all of the bubbles in the top row
     for (let col = 0; col < this.bubbles[0].length; col++) {
       const bubble = this.bubbles[0][col];
       if (bubble.status === "active") {
@@ -222,7 +246,7 @@ class BubbleManager {
       });
     }
 
-    // find all floating bubbles, excluding bubbles in the row with index 0
+    // Find all floating bubbles, excluding bubbles in the row with index 0
     for (let row = 1; row < this.bubbles.length; row++) {
       for (let col = 0; col < this.bubbles[row].length; col++) {
         const bubble = this.bubbles[row][col];
